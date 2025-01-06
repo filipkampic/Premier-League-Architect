@@ -19,8 +19,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,11 +79,9 @@ fun SplashScreen(
 
         Text(
             text = "PREMIER LEAGUE ARCHITECT",
-            style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.bebas_neue, FontWeight.Normal)),
-                fontSize = 24.sp,
-                color = Color(0XFF00FF85)
-            ),
+            fontFamily = bebasNeueFontFamily,
+            fontSize = 30.sp,
+            color = Color(0XFF00FF85),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
