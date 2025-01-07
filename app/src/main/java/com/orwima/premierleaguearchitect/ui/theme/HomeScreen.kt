@@ -3,7 +3,9 @@ package com.orwima.premierleaguearchitect.ui.theme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,32 +56,36 @@ fun HomeScreen(
                 .scale(3.2f)
         )
 
-        Box(
+        Text(
+            text = "PREMIER LEAGUE ARCHITECT",
+            fontFamily = FontFamily(Font(R.font.bebas_neue)),
+            fontSize = 56.sp,
+            color = Color(0XFF00FF85),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 80.dp)
+        )
+
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(top = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "PREMIER LEAGUE ARCHITECT",
-                fontFamily = FontFamily(Font(R.font.bebas_neue)),
-                fontSize = 56.sp,
-                color = Color(0XFF00FF85),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 80.dp)
-            )
-
             HomeButton(text = "CREATE LINEUP") {
                 navController.navigate("team_selection")
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             HomeButton(text = "SAVED LINEUPS") {
                 navController.navigate("saved_lineups")
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             HomeButton(text = "LINEUPS BY TEAM") {
                 navController.navigate("lineups_by_team")
@@ -95,13 +101,18 @@ fun HomeButton(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .height(50.dp)
-            .background(Color.White, shape = RoundedCornerShape(10.dp))
+            .fillMaxWidth(0.7f)
+            .height(72.dp)
+            .background(Color.White, shape = RoundedCornerShape(30.dp))
             .clickable { onClick() },
+        contentAlignment = Alignment.Center
     ) {
         Text(
-            text = text
+            text = text,
+            fontFamily = FontFamily(Font(R.font.bebas_neue)),
+            fontSize = 20.sp,
+            color = Color.Black,
+            textAlign = TextAlign.Center,
         )
     }
 }
