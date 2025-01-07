@@ -1,4 +1,4 @@
-package com.orwima.premierleaguearchitect.ui.theme
+package com.orwima.premierleaguearchitect
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.orwima.premierleaguearchitect.R
 
 @Composable
 @Preview(showBackground = true)
