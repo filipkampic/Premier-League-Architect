@@ -1,13 +1,115 @@
 package com.orwima.premierleaguearchitect
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.content.MediaType.Companion.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+
+@Composable
+@Preview(showBackground = true)
+fun CreateLineupMenuPreview(modifier: Modifier = Modifier) {
+    CreateLineupMenu(navController = rememberNavController())
+}
 
 @Composable
 fun CreateLineupMenu(
-    modifier: Modifier = Modifier,
     navController: NavController
 ) {
+    val teams = listOf(
+        Pair("Arsenal", R.drawable.arsenal),
+        Pair("Aston Villa", R.drawable.aston_villa),
+        Pair("Bournemouth", R.drawable.bournemouth),
+        Pair("Brentford", R.drawable.brentford),
+        Pair("Brighton", R.drawable.brighton),
+        Pair("Chelsea", R.drawable.chelsea),
+        Pair("Crystal Palace", R.drawable.crystal_palace),
+        Pair("Everton", R.drawable.everton),
+        Pair("Fulham", R.drawable.fulham),
+        Pair("Ipswich Town", R.drawable.ipswich_town),
+        Pair("Leicester City", R.drawable.leicester_city),
+        Pair("Liverpool", R.drawable.liverpool),
+        Pair("Man City", R.drawable.man_city),
+        Pair("Man United", R.drawable.man_united),
+        Pair("Newcastle", R.drawable.newcastle),
+        Pair("Nottingham Forest", R.drawable.nottingham_forest),
+        Pair("Southampton", R.drawable.southampton),
+        Pair("Tottenham", R.drawable.tottenham),
+        Pair("West Ham", R.drawable.west_ham),
+        Pair("Wolves", R.drawable.wolves)
+    )
 
+    val selectedTeam = remember { mutableStateOf<Pair<String, Int>?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0XFF252431))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "PICK YOUR CLUB",
+            fontFamily = FontFamily(Font(R.font.bebas_neue)),
+            fontSize = 32.sp,
+            color = Color(0XFF00FF85),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        )
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(teams) { team ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable { selectedTeam.value = team }
+                ) {
+                    Image(
+                        painter = painterResource(id = team.second),
+                        contentDescription = team.first,
+                        modifier = Modifier.size(60.dp)
+                    )
+                    Text(
+                        text = team.first,
+                        fontFamily = FontFamily(Font(R.font.bebas_neue)),
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
+        }
+    }
 }
