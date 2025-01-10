@@ -14,5 +14,8 @@ fun AppNavigation() {
         startDestination = "home"
     ) {
         composable("home") { HomeScreen(navController = navController) }
+        composable("team_selection") { CreateLineupMenu(navController = navController) }
+        composable("saved_lineups") { SavedLineupsMenu(navController = navController) }
+        composable("lineups_by_team") { LineupsByTeamMenu(navController = navController) }
     }
 }
