@@ -3,18 +3,23 @@ package com.orwima.premierleaguearchitect
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.content.MediaType.Companion.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -84,14 +89,14 @@ fun CreateLineupMenu(
                 .graphicsLayer(alpha = 0.4f)
                 .scale(3.2f)
         )
-        
+
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
             Text(
                 text = "PICK YOUR CLUB",
                 fontFamily = FontFamily(Font(R.font.bebas_neue)),
-                fontSize = 40.sp,
+                fontSize = 48.sp,
                 color = Color(0XFF00FF85),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -101,15 +106,16 @@ fun CreateLineupMenu(
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(bottom = 10.dp)
             ) {
                 items(teams) { team ->
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable { selectedTeam.value = team }
+                        modifier = Modifier
+                            .clickable { selectedTeam.value = team }
                     ) {
                         Image(
                             painter = painterResource(id = team.second),
@@ -118,11 +124,84 @@ fun CreateLineupMenu(
                         )
                         Text(
                             text = team.first,
-                            fontFamily = FontFamily(Font(R.font.bebas_neue)),
-                            fontSize = 18.sp,
+                            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                            fontSize = 12.sp,
                             color = Color.White,
                             textAlign = TextAlign.Center,
                         )
+                    }
+                }
+            }
+        }
+
+        if (selectedTeam.value != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { },
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .background(Color(0XFF38003C), RoundedCornerShape(10.dp))
+                        .padding(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                        ) {
+                            Text(
+                                text = "X",
+                                fontFamily = FontFamily(Font(R.font.bebas_neue)),
+                                fontSize = 20.sp,
+                                color = Color(0XFF00FF85),
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .clickable {
+                                        selectedTeam.value = null
+                                    }
+                                    .padding(8.dp)
+                            )
+
+                            Text(
+                                text = selectedTeam.value?.first ?: "",
+                                fontFamily = FontFamily(Font(R.font.bebas_neue)),
+                                fontSize = 24.sp,
+                                color = Color(0XFF00FF85),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+
+
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                                .background(Color(0XFF00FF85), RoundedCornerShape(10.dp))
+                                .clickable {
+                                    navController.navigate("lineup_builder")
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "CONFIRM",
+                                fontFamily = FontFamily(Font(R.font.bebas_neue)),
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
