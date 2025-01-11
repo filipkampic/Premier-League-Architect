@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.content.MediaType.Companion.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -56,7 +60,7 @@ fun CreateLineupMenu(
         Pair("Liverpool", R.drawable.liverpool),
         Pair("Man City", R.drawable.man_city),
         Pair("Man United", R.drawable.man_united),
-        Pair("Newcastle", R.drawable.newcastle),
+        Pair("Newcastle", R.drawable.newcastle_united),
         Pair("Nottingham Forest", R.drawable.nottingham_forest),
         Pair("Southampton", R.drawable.southampton),
         Pair("Tottenham", R.drawable.tottenham),
@@ -66,48 +70,60 @@ fun CreateLineupMenu(
 
     val selectedTeam = remember { mutableStateOf<Pair<String, Int>?>(null) }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0XFF252431))
-            .padding(16.dp)
     ) {
-        Text(
-            text = "PICK YOUR CLUB",
-            fontFamily = FontFamily(Font(R.font.bebas_neue)),
-            fontSize = 32.sp,
-            color = Color(0XFF00FF85),
-            textAlign = TextAlign.Center,
+        Image(
+            painter = painterResource(id = R.drawable.pl_bg),
+            contentDescription = "Premier League Logo Background",
+            contentScale = ContentScale.Fit,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .fillMaxSize()
+                .graphicsLayer(alpha = 0.4f)
+                .scale(3.2f)
         )
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(4),
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            items(teams) { team ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable { selectedTeam.value = team }
-                ) {
-                    Image(
-                        painter = painterResource(id = team.second),
-                        contentDescription = team.first,
-                        modifier = Modifier.size(60.dp)
-                    )
-                    Text(
-                        text = team.first,
-                        fontFamily = FontFamily(Font(R.font.bebas_neue)),
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
+            Text(
+                text = "PICK YOUR CLUB",
+                fontFamily = FontFamily(Font(R.font.bebas_neue)),
+                fontSize = 40.sp,
+                color = Color(0XFF00FF85),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp, top = 64.dp)
+            )
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(teams) { team ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable { selectedTeam.value = team }
+                    ) {
+                        Image(
+                            painter = painterResource(id = team.second),
+                            contentDescription = team.first,
+                            modifier = Modifier.size(80.dp)
+                        )
+                        Text(
+                            text = team.first,
+                            fontFamily = FontFamily(Font(R.font.bebas_neue)),
+                            fontSize = 18.sp,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 }
             }
         }
