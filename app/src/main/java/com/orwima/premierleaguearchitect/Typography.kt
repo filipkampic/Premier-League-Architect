@@ -10,5 +10,6 @@ val bebasNeueFontFamily = FontFamily(
 
 
 val montserratFontFamily = FontFamily(
-    Font(R.font.montserrat_regular, FontWeight.Normal)
+    Font(R.font.montserrat_regular, FontWeight.Normal),
+    Font(R.font.montserrat_bold, FontWeight.Normal)
 )
