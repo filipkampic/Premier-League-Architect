@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -104,31 +105,38 @@ fun CreateLineupMenu(
                     .padding(bottom = 32.dp, top = 64.dp)
             )
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                contentPadding = PaddingValues(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.padding(bottom = 10.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+                    .weight(1f)
             ) {
-                items(teams) { team ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .clickable { selectedTeam.value = team }
-                    ) {
-                        Image(
-                            painter = painterResource(id = team.second),
-                            contentDescription = team.first,
-                            modifier = Modifier.size(80.dp)
-                        )
-                        Text(
-                            text = team.first,
-                            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                            fontSize = 12.sp,
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                        )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    contentPadding = PaddingValues(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.padding(bottom = 10.dp)
+                ) {
+                    items(teams) { team ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .clickable { selectedTeam.value = team }
+                        ) {
+                            Image(
+                                painter = painterResource(id = team.second),
+                                contentDescription = team.first,
+                                modifier = Modifier.size(70.dp)
+                            )
+                            Text(
+                                text = team.first,
+                                fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                                fontSize = 10.sp,
+                                color = Color.White,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
                     }
                 }
             }
