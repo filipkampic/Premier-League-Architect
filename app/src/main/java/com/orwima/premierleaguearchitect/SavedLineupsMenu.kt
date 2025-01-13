@@ -8,11 +8,14 @@ import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -97,7 +100,7 @@ fun SavedLineupsMenu(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 32.dp, top = 64.dp)
+                    .padding(bottom = 16.dp, top = 64.dp)
             )
 
             Row(
@@ -105,16 +108,21 @@ fun SavedLineupsMenu(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "SORT BY:",
-                    fontFamily = FontFamily(Font(R.font.montserrat_bold)),
-                    fontSize = 14.sp,
-                    color = Color.White
-                )
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        text = "SORT BY:",
+                        fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
 
-                Box {
+                Box { // Dropdown should always be the same size TO-DO
                     Text(
                         text = selectedSortOption.value,
                         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
@@ -122,8 +130,8 @@ fun SavedLineupsMenu(
                         color = Color.Black,
                         modifier = Modifier
                             .clickable { isDropdownExpanded.value = true }
-                            .background(Color.White)
-                            .padding(8.dp)
+                            .background(Color.White, shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
 
                     DropdownMenu(
@@ -147,6 +155,43 @@ fun SavedLineupsMenu(
                                 }
                             )
                         }
+                    }
+                }
+            }
+
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(top = 20.dp)
+            ) {
+                items(lineups) { lineup ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = Color(0XFF38003C),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                            .clickable {
+                                navController.navigate("saved_lineup_example") /*TO-DO*/
+                            }
+                    ) {
+                        Image(
+                            painter = painterResource(id = lineup.second),
+                            contentDescription = lineup.first,
+                            modifier = Modifier
+                                .size(56.dp)
+                        )
+
+                        Text(
+                            text = lineup.first,
+                            fontFamily = FontFamily(Font(R.font.paytoneone_regular)),
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
                     }
                 }
             }
