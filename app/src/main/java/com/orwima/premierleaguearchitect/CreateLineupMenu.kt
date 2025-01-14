@@ -43,7 +43,7 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 @Preview(showBackground = true)
-fun CreateLineupMenuPreview(modifier: Modifier = Modifier) {
+fun CreateLineupMenuPreview() {
     CreateLineupMenu(navController = rememberNavController())
 }
 

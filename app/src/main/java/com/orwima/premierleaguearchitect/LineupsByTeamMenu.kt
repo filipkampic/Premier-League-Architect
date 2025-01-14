@@ -39,7 +39,7 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 @Preview(showBackground = true)
-fun LineupsByTeamMenuPreview(modifier: Modifier = Modifier) {
+fun LineupsByTeamMenuPreview() {
     LineupsByTeamMenu(navController = rememberNavController())
 }
 

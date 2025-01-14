@@ -33,7 +33,7 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 @Preview(showBackground = true)
-fun HomeScreenPreview(modifier: Modifier = Modifier) {
+fun HomeScreenPreview() {
     HomeScreen(navController = rememberNavController())
 }
 

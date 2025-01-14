@@ -3,8 +3,6 @@ package com.orwima.premierleaguearchitect
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.content.MediaType.Companion.Image
-import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,30 +36,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlin.math.exp
 
 @Composable
 @Preview(showBackground = true)
-fun SavedLineupsMenuPreview() {
-    SavedLineupsMenu(navController = rememberNavController())
+fun TeamLineupsPreview() {
+    TeamLineups(navController = rememberNavController(), "Arsenal", listOf(Pair("Best Arsenal 11", R.drawable.arsenal), Pair("Lineup vs Spurs", R.drawable.arsenal)))
 }
 
 @Composable
-fun SavedLineupsMenu(
-    navController: NavController
+fun TeamLineups(
+    navController: NavController,
+    teamName: String,
+    teamLineups: List<Pair<String, Int>>
 ) {
-    val initialLineups = listOf(
-        Pair("Best Arsenal 11", R.drawable.arsenal),
-        Pair("No Palmer", R.drawable.chelsea),
-        Pair("Lineup vs Spurs", R.drawable.arsenal),
-        Pair("Amorim style", R.drawable.man_united)
-    )
-
-    val lineups = remember { mutableStateOf(initialLineups) }
-
-    val sortOptions = listOf("Created (Newest)", "Created (Oldest)", "Name (A-Z)", "Name (Z-A)", "Club (A-Z)", "Club (Z-A)")
+    val sortOptions = listOf("Created (Newest)", "Created (Oldest)", "Name (A-Z)", "Name (Z-A)")
     val selectedSortOption = remember { mutableStateOf(sortOptions[0]) }
     val isDropdownExpanded = remember { mutableStateOf(false) }
+    val lineups = remember { mutableStateOf(teamLineups) }
 
     Box(
         modifier = Modifier
@@ -87,7 +78,7 @@ fun SavedLineupsMenu(
                 .padding(top = 16.dp)
                 .align(Alignment.TopStart)
                 .clickable {
-                    navController.navigate("home")
+                    navController.navigate("lineups_by_team")
                 }
         )
 
@@ -95,7 +86,7 @@ fun SavedLineupsMenu(
             modifier = Modifier.fillMaxSize()
         ) {
             Text(
-                text = "SAVED LINEUPS",
+                text = "$teamName LINEUPS",
                 fontFamily = FontFamily(Font(R.font.bebas_neue)),
                 fontSize = 48.sp,
                 color = Color(0XFF00FF85),
@@ -162,12 +153,6 @@ fun SavedLineupsMenu(
                                         }
                                         "Name (Z-A)" -> {
                                             lineups.value = lineups.value.sortedByDescending { it.first }
-                                        }
-                                        "Club (A-Z)" -> {
-                                            lineups.value = lineups.value.sortedBy { it.second }
-                                        }
-                                        "Club (Z-A)" -> {
-                                            lineups.value = lineups.value.sortedByDescending { it.second }
                                         }
                                     }
                                 },
