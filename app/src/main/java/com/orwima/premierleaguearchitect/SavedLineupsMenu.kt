@@ -50,12 +50,14 @@ fun SavedLineupsMenuPreview(modifier: Modifier = Modifier) {
 fun SavedLineupsMenu(
     navController: NavController
 ) {
-    val lineups = listOf(
+    val initialLineups = listOf(
         Pair("Best Arsenal 11", R.drawable.arsenal),
         Pair("No Palmer", R.drawable.chelsea),
         Pair("Lineup vs Spurs", R.drawable.arsenal),
         Pair("Amorim style", R.drawable.man_united)
     )
+
+    val lineups = remember { mutableStateOf(initialLineups) }
 
     val sortOptions = listOf("Created (Newest)", "Created (Oldest)", "Name (A-Z)", "Name (Z-A)", "Club (A-Z)", "Club (Z-A)")
     val selectedSortOption = remember { mutableStateOf(sortOptions[0]) }
@@ -122,16 +124,19 @@ fun SavedLineupsMenu(
                     )
                 }
 
-                Box { // Dropdown should always be the same size TO-DO
+                Box(
+                    modifier = Modifier
+                        .size(140.dp, 26.dp)
+                        .background(Color.White, shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+                        .clickable { isDropdownExpanded.value = true },
+                    contentAlignment = Alignment.CenterEnd
+                ) {
                     Text(
                         text = selectedSortOption.value,
                         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                         fontSize = 14.sp,
                         color = Color.Black,
-                        modifier = Modifier
-                            .clickable { isDropdownExpanded.value = true }
-                            .background(Color.White, shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
 
                     DropdownMenu(
@@ -144,6 +149,27 @@ fun SavedLineupsMenu(
                                 onClick = {
                                     selectedSortOption.value = option
                                     isDropdownExpanded.value = false
+
+                                    when(option) {
+                                        "Created (Newest)" -> {
+                                            // TO-DO: Implement sorting by created (newest)
+                                        }
+                                        "Created (Oldest)" -> {
+                                            // TO-DO: Implement sorting by created (oldest)
+                                        }
+                                        "Name (A-Z)" -> {
+                                            lineups.value = lineups.value.sortedBy { it.first }
+                                        }
+                                        "Name (Z-A)" -> {
+                                            lineups.value = lineups.value.sortedByDescending { it.first }
+                                        }
+                                        "Club (A-Z)" -> {
+                                            lineups.value = lineups.value.sortedBy { it.second }
+                                        }
+                                        "Club (Z-A)" -> {
+                                            lineups.value = lineups.value.sortedByDescending { it.second }
+                                        }
+                                    }
                                 },
                                 text = {
                                     Text(
@@ -164,7 +190,7 @@ fun SavedLineupsMenu(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(top = 20.dp)
             ) {
-                items(lineups) { lineup ->
+                items(lineups.value) { lineup ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
