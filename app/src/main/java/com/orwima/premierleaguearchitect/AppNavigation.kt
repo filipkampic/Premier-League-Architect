@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val teamLineupsRepository = TeamLineupsRepository()
 
     NavHost(
         navController = navController,
@@ -25,8 +26,8 @@ fun AppNavigation() {
             arguments = listOf(navArgument("teamName") { type = NavType.StringType })
         ) { backStackEntry ->
             val teamName = backStackEntry.arguments?.getString("teamName") ?: ""
-           // val teamLineups = getTeamLineupsByName(teamName)
-            //TeamLineups(navController = navController, teamName = teamName, teamLineups = teamLineups)
+            val teamLineups = teamLineupsRepository.getTeamLineupsByName(teamName)
+            TeamLineups(navController = navController, teamName = teamName, teamLineups = teamLineups)
         }
     }
 }
