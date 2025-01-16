@@ -17,7 +17,8 @@ class MainActivity : ComponentActivity() {
             window.navigationBarColor = getColor(R.color.black)
         }
         setContent {
-            AppNavigation()
+            //AppNavigation()
+            LineupBuilder("Arsenal", R.drawable.arsenal, listOf("4-3-3"), {}, {})
         }
     }
 }

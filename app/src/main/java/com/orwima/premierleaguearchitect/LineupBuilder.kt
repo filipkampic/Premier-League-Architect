@@ -9,16 +9,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +33,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +53,7 @@ fun LineupBuilderPreview() {
     LineupBuilder("Arsenal", R.drawable.arsenal, listOf("4-3-3"), {}, {})
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LineupBuilder(
     teamName: String,
@@ -55,6 +63,8 @@ fun LineupBuilder(
     onLeave: () -> Unit
 ) {
     var selectedFormation by remember { mutableStateOf(availableFormations.first()) }
+    var lineupName by remember { mutableStateOf("LINEUP NAME") }
+    var isNameFocused by remember { mutableStateOf(false) }
     val positions = getFormationPositions(selectedFormation)
 
     Box(
@@ -97,17 +107,40 @@ fun LineupBuilder(
                 contentDescription = "$teamName Logo",
                 modifier = Modifier.size(80.dp)
             )
-            Text(
-                text = "LINEUP NAME",
-                fontSize = 24.sp,
-                fontFamily = FontFamily(Font(R.font.bebas_neue)),
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 16.dp)
+            TextField(
+                value = lineupName,
+                onValueChange = { lineupName = it },
+                textStyle = TextStyle(
+                    fontSize = 24.sp,
+                    fontFamily = FontFamily(Font(R.font.bebas_neue)),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                ),
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused && !isNameFocused) {
+                            lineupName = ""
+                            isNameFocused = true
+                        }
+                    },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                )
             )
             Box(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth(0.5f)
+                    .height(2.dp)
+                    .background(Color.White)
+                    .padding(top = 8.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .height(400.dp)
             ) {
                 positions.forEach { (position, coordinates) ->
                     Box(
@@ -142,29 +175,37 @@ fun LineupBuilder(
                     availableFormations = availableFormations,
                     onFormationSelected = { selectedFormation = it }
                 )
-            }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(
-                    onClick = onSave,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF40C5C))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = "SAVE",
-                        color = Color.White
-                    )
-                }
-                Button(
-                    onClick = onLeave,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                ) {
-                    Text(
-                        text = "LEAVE",
-                        color = Color.Black
-                    )
+                    Button(
+                        onClick = onSave,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF40C5C)),
+                        modifier = Modifier
+                            .width(90.dp)
+                    ) {
+                        Text(
+                            text = "SAVE",
+                            color = Color.White
+                        )
+                    }
+                    Button(
+                        onClick = onLeave,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults
+                            .buttonColors(containerColor = Color.White),
+                        modifier = Modifier
+                            .width(90.dp)
+
+                    ) {
+                        Text(
+                            text = "LEAVE",
+                            color = Color.Black
+                        )
+                    }
                 }
             }
         }
@@ -182,26 +223,36 @@ fun DropdownMenuComponent(
 
     Box(
         modifier = Modifier
-            .wrapContentSize(Alignment.TopStart)
+            .size(120.dp, 26.dp)
+            .background(Color.White, shape = RoundedCornerShape(4.dp))
+            .clickable { expanded = true },
+        contentAlignment = Alignment.Center
     ) {
-        Button(
-            onClick = { expanded = !expanded },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
-            modifier = Modifier.shadow(4.dp)
-        ) {
-            Text(
-                text = selectedFormation,
-                color = Color.White
-            )
-        }
+        Text(
+            text = selectedFormation,
+            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+            fontSize = 14.sp,
+            color = Color.Black,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color(0xFF2C2C2C))
+            modifier = Modifier.background(Color.White)
         ) {
             availableFormations.forEach { formation ->
                 DropdownMenuItem(
-                    text = { Text(text = formation, color = Color.White) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp),
+                    text = {
+                        Text(
+                            text = formation,
+                            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                            fontSize = 14.sp,
+                            color = Color.Black
+                        )
+                    },
                     onClick = {
                         expanded = false
                         onFormationSelected(formation)
