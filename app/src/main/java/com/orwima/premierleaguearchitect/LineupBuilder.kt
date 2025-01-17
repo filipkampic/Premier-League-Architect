@@ -47,13 +47,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 @Preview(showBackground = true)
 fun LineupBuilderPreview() {
-    LineupBuilder("Arsenal", R.drawable.arsenal, listOf("4-3-3"), {}, {})
+    LineupBuilder("Arsenal", R.drawable.arsenal, {}, {})
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,10 +62,10 @@ fun LineupBuilderPreview() {
 fun LineupBuilder(
     teamName: String,
     teamLogo: Int,
-    availableFormations: List<String>,
     onSave: () -> Unit,
     onLeave: () -> Unit
 ) {
+    val availableFormations = listOf("4-3-3", "4-2-3-1", "4-4-2", "3-4-2-1", "3-5-2", "4-4-1-1")
     var selectedFormation by remember { mutableStateOf(availableFormations.first()) }
     var lineupName by remember { mutableStateOf("LINEUP NAME") }
     var isNameFocused by remember { mutableStateOf(false) }
@@ -255,7 +256,8 @@ fun DropdownMenuComponent(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.White)
+            modifier = Modifier.background(Color.White),
+            //offset = DpOffset(x = 0.dp, y = 8.dp)
         ) {
             availableFormations.forEach { formation ->
                 DropdownMenuItem(
@@ -283,17 +285,82 @@ fun DropdownMenuComponent(
 fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
     return when(formation) {
         "4-3-3" -> mapOf(
-            "GK" to Pair(0.5f, 0.9f),
-            "LB" to Pair(0.2f, 0.75f),
-            "LCB" to Pair(0.35f, 0.8f),
-            "RCB" to Pair(0.65f, 0.8f),
-            "RB" to Pair(0.8f, 0.75f),
-            "LCM" to Pair(0.35f, 0.6f),
-            "CDM" to Pair(0.5f, 0.65f),
-            "RCM" to Pair(0.65f, 0.6f),
-            "LW" to Pair(0.2f, 0.4f),
-            "ST" to Pair(0.5f, 0.35f),
-            "RW" to Pair(0.8f, 0.4f)
+            "GK" to Pair(0.44f, 0.85f),
+            "LB" to Pair(0.14f, 0.65f),
+            "LCB" to Pair(0.29f, 0.75f),
+            "RCB" to Pair(0.59f, 0.75f),
+            "RB" to Pair(0.74f, 0.65f),
+            "LCM" to Pair(0.24f, 0.45f),
+            "CDM" to Pair(0.44f, 0.55f),
+            "RCM" to Pair(0.64f, 0.45f),
+            "LW" to Pair(0.19f, 0.20f),
+            "ST" to Pair(0.44f, 0.15f),
+            "RW" to Pair(0.69f, 0.20f)
+        )
+        "4-2-3-1" -> mapOf(
+            "GK" to Pair(0.44f, 0.85f),
+            "LB" to Pair(0.14f, 0.65f),
+            "LCB" to Pair(0.29f, 0.75f),
+            "RCB" to Pair(0.59f, 0.75f),
+            "RB" to Pair(0.74f, 0.65f),
+            "LDM" to Pair(0.29f, 0.55f),
+            "RDM" to Pair(0.59f, 0.55f),
+            "LAM" to Pair(0.24f, 0.35f),
+            "CAM" to Pair(0.44f, 0.30f),
+            "RAM" to Pair(0.64f, 0.35f),
+            "ST" to Pair(0.44f, 0.15f)
+        )
+        "4-4-2" -> mapOf(
+            "GK" to Pair(0.44f, 0.85f),
+            "LB" to Pair(0.14f, 0.65f),
+            "LCB" to Pair(0.29f, 0.75f),
+            "RCB" to Pair(0.59f, 0.75f),
+            "RB" to Pair(0.74f, 0.65f),
+            "LM" to Pair(0.19f, 0.45f),
+            "LCM" to Pair(0.34f, 0.50f),
+            "RCM" to Pair(0.54f, 0.50f),
+            "RM" to Pair(0.69f, 0.45f),
+            "LS" to Pair(0.34f, 0.20f),
+            "RS" to Pair(0.54f, 0.20f)
+        )
+        "3-4-2-1" -> mapOf(
+            "GK" to Pair(0.44f, 0.85f),
+            "LCB" to Pair(0.29f, 0.75f),
+            "CB" to Pair(0.44f, 0.75f),
+            "RCB" to Pair(0.59f, 0.75f),
+            "LM" to Pair(0.19f, 0.55f),
+            "LDM" to Pair(0.34f, 0.55f),
+            "RDM" to Pair(0.54f, 0.55f),
+            "RM" to Pair(0.69f, 0.55f),
+            "LAM" to Pair(0.34f, 0.30f),
+            "RAM" to Pair(0.54f, 0.30f),
+            "ST" to Pair(0.44f, 0.15f)
+        )
+        "3-5-2" -> mapOf(
+            "GK" to Pair(0.44f, 0.85f),
+            "LCB" to Pair(0.29f, 0.75f),
+            "CB" to Pair(0.44f, 0.75f),
+            "RCB" to Pair(0.59f, 0.75f),
+            "LM" to Pair(0.19f, 0.55f),
+            "LDM" to Pair(0.34f, 0.55f),
+            "CDM" to Pair(0.44f, 0.60f),
+            "RDM" to Pair(0.54f, 0.55f),
+            "RM" to Pair(0.69f, 0.55f),
+            "LS" to Pair(0.34f, 0.20f),
+            "RS" to Pair(0.54f, 0.20f)
+        )
+        "4-4-1-1" -> mapOf(
+            "GK" to Pair(0.44f, 0.85f),
+            "LB" to Pair(0.14f, 0.65f),
+            "LCB" to Pair(0.29f, 0.75f),
+            "RCB" to Pair(0.59f, 0.75f),
+            "RB" to Pair(0.74f, 0.65f),
+            "LM" to Pair(0.19f, 0.45f),
+            "LCM" to Pair(0.34f, 0.50f),
+            "RCM" to Pair(0.54f, 0.50f),
+            "RM" to Pair(0.69f, 0.45f),
+            "CAM" to Pair(0.44f, 0.30f),
+            "ST" to Pair(0.44f, 0.15f)
         )
         else -> emptyMap()
     }

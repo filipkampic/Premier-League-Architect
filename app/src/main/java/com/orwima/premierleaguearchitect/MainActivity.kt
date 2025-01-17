@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             //AppNavigation()
-            LineupBuilder("Arsenal", R.drawable.arsenal, listOf("4-3-3"), {}, {})
+            LineupBuilder("Arsenal", R.drawable.arsenal, {}, {})
         }
     }
 }
