@@ -65,7 +65,7 @@ fun LineupBuilder(
     onSave: () -> Unit,
     onLeave: () -> Unit
 ) {
-    val availableFormations = listOf("4-3-3", "4-2-3-1", "4-4-2", "3-4-2-1", "3-5-2", "4-4-1-1")
+    val availableFormations = listOf("4-3-3", "4-2-3-1", "4-4-2", "3-4-2-1", "3-5-2", "4-4-1-1",)
     var selectedFormation by remember { mutableStateOf(availableFormations.first()) }
     var lineupName by remember { mutableStateOf("LINEUP NAME") }
     var isNameFocused by remember { mutableStateOf(false) }
@@ -256,14 +256,13 @@ fun DropdownMenuComponent(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.White),
-            //offset = DpOffset(x = 0.dp, y = 8.dp)
+            modifier = Modifier.background(Color.White)
         ) {
             availableFormations.forEach { formation ->
                 DropdownMenuItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(16.dp),
+                        .height(32.dp),
                     text = {
                         Text(
                             text = formation,
@@ -305,9 +304,9 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
             "RB" to Pair(0.74f, 0.65f),
             "LDM" to Pair(0.29f, 0.55f),
             "RDM" to Pair(0.59f, 0.55f),
-            "LAM" to Pair(0.24f, 0.35f),
+            "LM" to Pair(0.18f, 0.30f),
             "CAM" to Pair(0.44f, 0.30f),
-            "RAM" to Pair(0.64f, 0.35f),
+            "RM" to Pair(0.70f, 0.30f),
             "ST" to Pair(0.44f, 0.15f)
         )
         "4-4-2" -> mapOf(
@@ -316,36 +315,36 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
             "LCB" to Pair(0.29f, 0.75f),
             "RCB" to Pair(0.59f, 0.75f),
             "RB" to Pair(0.74f, 0.65f),
-            "LM" to Pair(0.19f, 0.45f),
+            "LM" to Pair(0.16f, 0.45f),
             "LCM" to Pair(0.34f, 0.50f),
             "RCM" to Pair(0.54f, 0.50f),
-            "RM" to Pair(0.69f, 0.45f),
-            "LS" to Pair(0.34f, 0.20f),
-            "RS" to Pair(0.54f, 0.20f)
+            "RM" to Pair(0.72f, 0.45f),
+            "LST" to Pair(0.34f, 0.20f),
+            "RST" to Pair(0.54f, 0.20f)
         )
         "3-4-2-1" -> mapOf(
             "GK" to Pair(0.44f, 0.85f),
-            "LCB" to Pair(0.29f, 0.75f),
-            "CB" to Pair(0.44f, 0.75f),
-            "RCB" to Pair(0.59f, 0.75f),
-            "LM" to Pair(0.19f, 0.55f),
-            "LDM" to Pair(0.34f, 0.55f),
-            "RDM" to Pair(0.54f, 0.55f),
-            "RM" to Pair(0.69f, 0.55f),
-            "LAM" to Pair(0.34f, 0.30f),
-            "RAM" to Pair(0.54f, 0.30f),
+            "LCB" to Pair(0.24f, 0.70f),
+            "CB" to Pair(0.44f, 0.70f),
+            "RCB" to Pair(0.64f, 0.70f),
+            "LM" to Pair(0.16f, 0.50f),
+            "LDM" to Pair(0.34f, 0.50f),
+            "RDM" to Pair(0.54f, 0.50f),
+            "RM" to Pair(0.72f, 0.50f),
+            "LAM" to Pair(0.28f, 0.30f),
+            "RAM" to Pair(0.60f, 0.30f),
             "ST" to Pair(0.44f, 0.15f)
         )
         "3-5-2" -> mapOf(
             "GK" to Pair(0.44f, 0.85f),
-            "LCB" to Pair(0.29f, 0.75f),
-            "CB" to Pair(0.44f, 0.75f),
-            "RCB" to Pair(0.59f, 0.75f),
-            "LM" to Pair(0.19f, 0.55f),
-            "LDM" to Pair(0.34f, 0.55f),
-            "CDM" to Pair(0.44f, 0.60f),
-            "RDM" to Pair(0.54f, 0.55f),
-            "RM" to Pair(0.69f, 0.55f),
+            "LCB" to Pair(0.24f, 0.70f),
+            "CB" to Pair(0.44f, 0.70f),
+            "RCB" to Pair(0.64f, 0.70f),
+            "LM" to Pair(0.16f, 0.45f),
+            "LDM" to Pair(0.32f, 0.45f),
+            "CDM" to Pair(0.44f, 0.50f),
+            "RDM" to Pair(0.56f, 0.45f),
+            "RM" to Pair(0.72f, 0.45f),
             "LS" to Pair(0.34f, 0.20f),
             "RS" to Pair(0.54f, 0.20f)
         )
@@ -355,10 +354,10 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
             "LCB" to Pair(0.29f, 0.75f),
             "RCB" to Pair(0.59f, 0.75f),
             "RB" to Pair(0.74f, 0.65f),
-            "LM" to Pair(0.19f, 0.45f),
+            "LM" to Pair(0.16f, 0.45f),
             "LCM" to Pair(0.34f, 0.50f),
             "RCM" to Pair(0.54f, 0.50f),
-            "RM" to Pair(0.69f, 0.45f),
+            "RM" to Pair(0.72f, 0.45f),
             "CAM" to Pair(0.44f, 0.30f),
             "ST" to Pair(0.44f, 0.15f)
         )
