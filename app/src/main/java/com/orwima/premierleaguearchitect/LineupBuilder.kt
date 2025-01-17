@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,20 +33,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.exp
 
 @Composable
 @Preview(showBackground = true)
@@ -65,7 +68,9 @@ fun LineupBuilder(
     var selectedFormation by remember { mutableStateOf(availableFormations.first()) }
     var lineupName by remember { mutableStateOf("LINEUP NAME") }
     var isNameFocused by remember { mutableStateOf(false) }
+    var responsivePositions by remember { mutableStateOf<Map<String, Pair<Dp, Dp>>>(emptyMap()) }
     val positions = getFormationPositions(selectedFormation)
+    val density = LocalDensity.current
 
     Box(
         modifier = Modifier
@@ -140,14 +145,26 @@ fun LineupBuilder(
             )
             Box(
                 modifier = Modifier
-                    .height(400.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(1f) // Ensure the box is square
+                    .onGloballyPositioned { layoutCoordinates ->
+                        val containerWidth = layoutCoordinates.size.width
+                        val containerHeight = layoutCoordinates.size.height
+
+                        responsivePositions = calculateResponsivePositions(
+                            positions = positions,
+                            containerWidth = containerWidth,
+                            containerHeight = containerHeight,
+                            density = density
+                        )
+                    }
             ) {
-                positions.forEach { (position, coordinates) ->
+                responsivePositions.forEach { (position, coordinates) ->
                     Box(
                         modifier = Modifier
                             .offset(
-                                x = coordinates.first.dp,
-                                y = coordinates.second.dp
+                                x = coordinates.first,
+                                y = coordinates.second
                             )
                             .size(48.dp)
                             .clickable {
@@ -263,21 +280,37 @@ fun DropdownMenuComponent(
     }
 }
 
-fun getFormationPositions(formation: String): Map<String, Pair<Int, Int>> {
+fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
     return when(formation) {
         "4-3-3" -> mapOf(
-            "GK" to Pair(0, 300),
-            "LB" to Pair(-120, 220),
-            "LCB" to Pair(-50, 250),
-            "RCB" to Pair(50, 250),
-            "RB" to Pair(120, 220),
-            "LCM" to Pair(-75, 150),
-            "CDM" to Pair(0, 175),
-            "RCM" to Pair(75, 150),
-            "LW" to Pair(-100, 75),
-            "ST" to Pair(0, 50),
-            "RW" to Pair(100 , 75)
+            "GK" to Pair(0.5f, 0.9f),
+            "LB" to Pair(0.2f, 0.75f),
+            "LCB" to Pair(0.35f, 0.8f),
+            "RCB" to Pair(0.65f, 0.8f),
+            "RB" to Pair(0.8f, 0.75f),
+            "LCM" to Pair(0.35f, 0.6f),
+            "CDM" to Pair(0.5f, 0.65f),
+            "RCM" to Pair(0.65f, 0.6f),
+            "LW" to Pair(0.2f, 0.4f),
+            "ST" to Pair(0.5f, 0.35f),
+            "RW" to Pair(0.8f, 0.4f)
         )
         else -> emptyMap()
+    }
+}
+
+fun calculateResponsivePositions(
+    positions: Map<String, Pair<Float, Float>>,
+    containerWidth: Int,
+    containerHeight: Int,
+    density: Density
+): Map<String, Pair<Dp, Dp>> {
+    return positions.mapValues { (_, coordinates) ->
+        with(density) {
+            Pair(
+                (coordinates.first * containerWidth).toDp(),
+                (coordinates.second * containerHeight).toDp()
+            )
+        }
     }
 }
