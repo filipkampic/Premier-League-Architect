@@ -29,16 +29,17 @@ fun AppNavigation() {
             TeamLineups(navController = navController, teamName = teamName, teamLineups = teamLineups)
         }
         composable(
-            route = "lineup_builder/{teamName}/{teamLogo}",
+            route = "lineup_builder/{teamName}/{teamLogo}/{teamJersey}",
             arguments = listOf(
                 navArgument("teamName") { type = NavType.StringType },
-                navArgument("teamLogo") { type = NavType.IntType }
-
+                navArgument("teamLogo") { type = NavType.IntType },
+                navArgument("teamJersey") { type = NavType.IntType }
             )
         ) { backStackEntry ->
             val teamName = backStackEntry.arguments?.getString("teamName") ?: ""
             val teamLogo = backStackEntry.arguments?.getInt("teamLogo") ?: 0
-            LineupBuilder(teamName = teamName, teamLogo = teamLogo, onSave = { /* TO-DO: Save Lineup */}, onLeave = { navController.navigate("home") })
+            val teamJersey = backStackEntry.arguments?.getInt("teamJersey") ?: 0
+            LineupBuilder(teamName = teamName, teamLogo = teamLogo, teamJersey = teamJersey, onSave = { /* TO-DO: Save Lineup */}, onLeave = { navController.navigate("home") })
         }
     }
 }
