@@ -222,7 +222,30 @@ fun CreateLineupMenu(
                                             "Wolves" -> R.drawable.jersey_wolves
                                             else -> R.drawable.jersey_noteam
                                         }
-                                        navController.navigate("lineup_builder/${team.first}/${team.second}/$teamJersey")
+                                        val teamGoalkeeperJersey = when(team.first) {
+                                            "Arsenal" -> R.drawable.goalkeeper_arsenal
+                                            "Aston Villa" -> R.drawable.goalkeeper_avilla
+                                            "Bournemouth" -> R.drawable.goalkeeper_bournemouth
+                                            "Brentford" -> R.drawable.goalkeeper_brentford
+                                            "Brighton" -> R.drawable.goalkeeper_brighton
+                                            "Chelsea" -> R.drawable.goalkeeper_chelsea
+                                            "Crystal Palace" -> R.drawable.goalkeeper_cpalace
+                                            "Everton" -> R.drawable.goalkeeper_everton
+                                            "Fulham" -> R.drawable.goalkeeper_fulham
+                                            "Ipswich Town" -> R.drawable.goalkeeper_ipswich
+                                            "Leicester City" -> R.drawable.goalkeeper_leicester
+                                            "Liverpool" -> R.drawable.goalkeeper_liverpool
+                                            "Man City" -> R.drawable.goalkeeper_mancity
+                                            "Man United" -> R.drawable.goalkeeper_manunited
+                                            "Newcastle" -> R.drawable.goalkeeper_newcastle
+                                            "Nottingham Forest" -> R.drawable.goalkeeper_forest
+                                            "Southampton" -> R.drawable.goalkeeper_southampton
+                                            "Tottenham" -> R.drawable.goalkeeper_spurs
+                                            "West Ham" -> R.drawable.goalkeeper_westham
+                                            "Wolves" -> R.drawable.goalkeeper_wolves
+                                            else -> R.drawable.jersey_noteam
+                                        }
+                                        navController.navigate("lineup_builder/${team.first}/${team.second}/$teamJersey/$teamGoalkeeperJersey")
                                     }
                                 },
                             contentAlignment = Alignment.Center

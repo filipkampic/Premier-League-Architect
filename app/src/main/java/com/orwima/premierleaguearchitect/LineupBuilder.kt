@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 @Preview(showBackground = true)
 fun LineupBuilderPreview() {
-    LineupBuilder("Bournemouth", R.drawable.bournemouth, R.drawable.jersey_bournemouth, {}, {})
+    LineupBuilder("Bournemouth", R.drawable.bournemouth, R.drawable.jersey_bournemouth, R.drawable.goalkeeper_bournemouth, {}, {})
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +61,7 @@ fun LineupBuilder(
     teamName: String,
     teamLogo: Int,
     teamJersey: Int,
+    teamGoalkeeperJersey: Int,
     onSave: () -> Unit,
     onLeave: () -> Unit
 ) {
@@ -173,7 +174,8 @@ fun LineupBuilder(
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
-                            painter = painterResource(id = teamJersey),
+                            painter = painterResource(
+                                id = if (position == "GK") teamGoalkeeperJersey else teamJersey),
                             contentDescription = position
                         )
                     }
