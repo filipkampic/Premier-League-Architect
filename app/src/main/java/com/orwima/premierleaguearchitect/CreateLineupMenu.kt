@@ -198,7 +198,9 @@ fun CreateLineupMenu(
                                 .height(50.dp)
                                 .background(Color(0XFF00FF85), RoundedCornerShape(10.dp))
                                 .clickable {
-                                    navController.navigate("lineup_builder")
+                                    selectedTeam.value?.let { team ->
+                                        navController.navigate("lineup_builder/${team.first}/${team.second}")
+                                    }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
