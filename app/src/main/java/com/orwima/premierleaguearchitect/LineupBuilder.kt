@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -65,13 +66,19 @@ fun LineupBuilder(
     onSave: () -> Unit,
     onLeave: () -> Unit
 ) {
-    val availableFormations = listOf("4-3-3", "4-2-3-1", "4-4-2", "3-4-2-1", "3-5-2", "4-4-1-1",)
+    val availableFormations = listOf("4-3-3", "4-2-3-1", "4-4-2", "3-4-2-1", "3-5-2", "4-4-1-1")
     var selectedFormation by remember { mutableStateOf(availableFormations.first()) }
+
     var lineupName by remember { mutableStateOf("LINEUP NAME") }
     var isNameFocused by remember { mutableStateOf(false) }
+
     var responsivePositions by remember { mutableStateOf<Map<String, Pair<Dp, Dp>>>(emptyMap()) }
     val positions = getFormationPositions(selectedFormation)
+
     val density = LocalDensity.current
+    var containerWidth by remember { mutableStateOf(0) }
+    var containerHeight by remember { mutableStateOf(0) }
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
     Box(
         modifier = Modifier
@@ -87,13 +94,12 @@ fun LineupBuilder(
                 .graphicsLayer(alpha = 0.4f)
                 .scale(3.2f)
         )
-
         Image(
             painter = painterResource(id = R.drawable.pitch),
             contentDescription = "Pitch",
+            contentScale = ContentScale.Fit,
             modifier = Modifier.fillMaxSize()
         )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -149,8 +155,8 @@ fun LineupBuilder(
                     .fillMaxWidth()
                     .aspectRatio(1f) // Ensure the box is square
                     .onGloballyPositioned { layoutCoordinates ->
-                        val containerWidth = layoutCoordinates.size.width
-                        val containerHeight = layoutCoordinates.size.height
+                        containerWidth = layoutCoordinates.size.width
+                        containerHeight = layoutCoordinates.size.height
 
                         responsivePositions = calculateResponsivePositions(
                             positions = positions,
@@ -161,13 +167,15 @@ fun LineupBuilder(
                     }
             ) {
                 responsivePositions.forEach { (position, coordinates) ->
+                    val iconSize = with(density) { (containerWidth * 0.125f).toDp() }
+
                     Box(
                         modifier = Modifier
                             .offset(
                                 x = coordinates.first,
                                 y = coordinates.second
                             )
-                            .size(48.dp)
+                            .size(iconSize)
                             .clickable {
                                 // Handle position click
                             },
@@ -204,7 +212,7 @@ fun LineupBuilder(
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF40C5C)),
                         modifier = Modifier
-                            .width(90.dp)
+                            .width(screenWidth * 0.3f)
                     ) {
                         Text(
                             text = "SAVE",
@@ -217,8 +225,7 @@ fun LineupBuilder(
                         colors = ButtonDefaults
                             .buttonColors(containerColor = Color.White),
                         modifier = Modifier
-                            .width(90.dp)
-
+                            .width(screenWidth * 0.3f)
                     ) {
                         Text(
                             text = "LEAVE",
@@ -236,13 +243,16 @@ fun DropdownMenuComponent(
     selectedFormation: String,
     availableFormations: List<String>,
     onFormationSelected: (String) -> Unit
-
 ) {
+    val screenWidth = LocalDensity.current.run { LocalConfiguration.current.screenWidthDp.dp }
+    val dropdownWidth = screenWidth * 0.4f
+
     var expanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
-            .size(120.dp, 26.dp)
+            .width(dropdownWidth)
+            .height(36.dp)
             .background(Color.White, shape = RoundedCornerShape(4.dp))
             .clickable { expanded = true },
         contentAlignment = Alignment.Center
@@ -285,17 +295,17 @@ fun DropdownMenuComponent(
 fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
     return when(formation) {
         "4-3-3" -> mapOf(
-            "GK" to Pair(0.44f, 0.85f),
-            "LB" to Pair(0.14f, 0.65f),
-            "LCB" to Pair(0.29f, 0.75f),
-            "RCB" to Pair(0.59f, 0.75f),
-            "RB" to Pair(0.74f, 0.65f),
-            "LCM" to Pair(0.24f, 0.45f),
-            "CDM" to Pair(0.44f, 0.55f),
-            "RCM" to Pair(0.64f, 0.45f),
-            "LW" to Pair(0.19f, 0.20f),
-            "ST" to Pair(0.44f, 0.15f),
-            "RW" to Pair(0.69f, 0.20f)
+            "GK" to Pair(0.43f, 0.82f),
+            "LB" to Pair(0.13f, 0.62f),
+            "LCB" to Pair(0.28f, 0.72f),
+            "RCB" to Pair(0.58f, 0.72f),
+            "RB" to Pair(0.73f, 0.62f),
+            "LCM" to Pair(0.23f, 0.42f),
+            "CDM" to Pair(0.43f, 0.52f),
+            "RCM" to Pair(0.63f, 0.42f),
+            "LW" to Pair(0.18f, 0.17f),
+            "ST" to Pair(0.43f, 0.12f),
+            "RW" to Pair(0.68f, 0.17f)
         )
         "4-2-3-1" -> mapOf(
             "GK" to Pair(0.44f, 0.85f),
