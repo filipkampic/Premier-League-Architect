@@ -3,6 +3,7 @@ package com.orwima.premierleaguearchitect
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -132,9 +135,11 @@ fun LineupBuilder(
                 modifier = Modifier
                     .fillMaxWidth()
                     .onFocusChanged { focusState ->
-                        if (focusState.isFocused && !isNameFocused) {
-                            lineupName = ""
-                            isNameFocused = true
+                        if (focusState.isFocused) {
+                            if (!isNameFocused) {
+                                lineupName = ""
+                                isNameFocused = true
+                            }
                         }
                     },
                 colors = TextFieldDefaults.textFieldColors(
@@ -176,7 +181,11 @@ fun LineupBuilder(
                                 y = coordinates.second
                             )
                             .size(iconSize)
-                            .clickable {
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+
+                            ) {
                                 // Handle position click
                             },
                         contentAlignment = Alignment.Center
@@ -295,82 +304,82 @@ fun DropdownMenuComponent(
 fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
     return when(formation) {
         "4-3-3" -> mapOf(
-            "GK" to Pair(0.43f, 0.82f),
-            "LB" to Pair(0.13f, 0.62f),
-            "LCB" to Pair(0.28f, 0.72f),
-            "RCB" to Pair(0.58f, 0.72f),
-            "RB" to Pair(0.73f, 0.62f),
-            "LCM" to Pair(0.23f, 0.42f),
-            "CDM" to Pair(0.43f, 0.52f),
-            "RCM" to Pair(0.63f, 0.42f),
-            "LW" to Pair(0.18f, 0.17f),
-            "ST" to Pair(0.43f, 0.12f),
-            "RW" to Pair(0.68f, 0.17f)
+            "GK" to Pair(0.44f, 0.82f),
+            "LB" to Pair(0.14f, 0.62f),
+            "LCB" to Pair(0.29f, 0.72f),
+            "RCB" to Pair(0.59f, 0.72f),
+            "RB" to Pair(0.74f, 0.62f),
+            "LCM" to Pair(0.24f, 0.42f),
+            "CDM" to Pair(0.44f, 0.52f),
+            "RCM" to Pair(0.64f, 0.42f),
+            "LW" to Pair(0.19f, 0.17f),
+            "ST" to Pair(0.44f, 0.12f),
+            "RW" to Pair(0.69f, 0.17f)
         )
         "4-2-3-1" -> mapOf(
-            "GK" to Pair(0.43f, 0.82f),
-            "LB" to Pair(0.13f, 0.62f),
-            "LCB" to Pair(0.28f, 0.72f),
-            "RCB" to Pair(0.58f, 0.72f),
-            "RB" to Pair(0.73f, 0.62f),
-            "LDM" to Pair(0.28f, 0.52f),
-            "RDM" to Pair(0.58f, 0.52f),
-            "LM" to Pair(0.18f, 0.32f),
-            "CAM" to Pair(0.43f, 0.32f),
-            "RM" to Pair(0.68f, 0.32f),
-            "ST" to Pair(0.43f, 0.12f)
+            "GK" to Pair(0.44f, 0.82f),
+            "LB" to Pair(0.14f, 0.62f),
+            "LCB" to Pair(0.29f, 0.72f),
+            "RCB" to Pair(0.59f, 0.72f),
+            "RB" to Pair(0.74f, 0.62f),
+            "LDM" to Pair(0.29f, 0.52f),
+            "RDM" to Pair(0.59f, 0.52f),
+            "LM" to Pair(0.19f, 0.32f),
+            "CAM" to Pair(0.44f, 0.32f),
+            "RM" to Pair(0.69f, 0.32f),
+            "ST" to Pair(0.44f, 0.12f)
         )
         "4-4-2" -> mapOf(
-            "GK" to Pair(0.43f, 0.82f),
-            "LB" to Pair(0.13f, 0.62f),
-            "LCB" to Pair(0.28f, 0.72f),
-            "RCB" to Pair(0.58f, 0.72f),
-            "RB" to Pair(0.73f, 0.62f),
-            "LM" to Pair(0.18f, 0.42f),
-            "LCM" to Pair(0.33f, 0.47f),
-            "RCM" to Pair(0.53f, 0.47f),
-            "RM" to Pair(0.68f, 0.42f),
-            "LST" to Pair(0.33f, 0.22f),
-            "RST" to Pair(0.53f, 0.22f)
+            "GK" to Pair(0.44f, 0.82f),
+            "LB" to Pair(0.14f, 0.62f),
+            "LCB" to Pair(0.29f, 0.72f),
+            "RCB" to Pair(0.59f, 0.72f),
+            "RB" to Pair(0.74f, 0.62f),
+            "LM" to Pair(0.19f, 0.42f),
+            "LCM" to Pair(0.34f, 0.47f),
+            "RCM" to Pair(0.54f, 0.47f),
+            "RM" to Pair(0.69f, 0.42f),
+            "LST" to Pair(0.34f, 0.22f),
+            "RST" to Pair(0.54f, 0.22f)
         )
         "3-4-2-1" -> mapOf(
-            "GK" to Pair(0.43f, 0.82f),
-            "LCB" to Pair(0.23f, 0.72f),
-            "CB" to Pair(0.43f, 0.72f),
-            "RCB" to Pair(0.63f, 0.72f),
-            "LM" to Pair(0.18f, 0.47f),
-            "LDM" to Pair(0.33f, 0.52f),
-            "RDM" to Pair(0.53f, 0.52f),
-            "RM" to Pair(0.68f, 0.47f),
-            "LAM" to Pair(0.28f, 0.27f),
-            "RAM" to Pair(0.58f, 0.27f),
-            "ST" to Pair(0.43f, 0.12f)
+            "GK" to Pair(0.44f, 0.82f),
+            "LCB" to Pair(0.24f, 0.69f),
+            "CB" to Pair(0.44f, 0.69f),
+            "RCB" to Pair(0.64f, 0.69f),
+            "LM" to Pair(0.19f, 0.47f),
+            "LDM" to Pair(0.34f, 0.52f),
+            "RDM" to Pair(0.54f, 0.52f),
+            "RM" to Pair(0.69f, 0.47f),
+            "LAM" to Pair(0.29f, 0.27f),
+            "RAM" to Pair(0.59f, 0.27f),
+            "ST" to Pair(0.44f, 0.12f)
         )
         "3-5-2" -> mapOf(
-            "GK" to Pair(0.43f, 0.82f),
-            "LCB" to Pair(0.23f, 0.72f),
-            "CB" to Pair(0.43f, 0.72f),
-            "RCB" to Pair(0.63f, 0.72f),
+            "GK" to Pair(0.44f, 0.82f),
+            "LCB" to Pair(0.24f, 0.69f),
+            "CB" to Pair(0.44f, 0.69f),
+            "RCB" to Pair(0.64f, 0.69f),
             "LM" to Pair(0.18f, 0.42f),
             "LDM" to Pair(0.33f, 0.47f),
-            "CDM" to Pair(0.43f, 0.52f),
-            "RDM" to Pair(0.53f, 0.47f),
-            "RM" to Pair(0.68f, 0.42f),
-            "LST" to Pair(0.33f, 0.22f),
-            "RST" to Pair(0.53f, 0.22f)
+            "CDM" to Pair(0.44f, 0.52f),
+            "RDM" to Pair(0.55f, 0.47f),
+            "RM" to Pair(0.70f, 0.42f),
+            "LST" to Pair(0.34f, 0.22f),
+            "RST" to Pair(0.54f, 0.22f)
         )
         "4-4-1-1" -> mapOf(
-            "GK" to Pair(0.43f, 0.82f),
-            "LB" to Pair(0.13f, 0.62f),
-            "LCB" to Pair(0.28f, 0.72f),
-            "RCB" to Pair(0.58f, 0.72f),
-            "RB" to Pair(0.73f, 0.62f),
-            "LM" to Pair(0.18f, 0.42f),
-            "LCM" to Pair(0.33f, 0.47f),
-            "RCM" to Pair(0.53f, 0.47f),
-            "RM" to Pair(0.68f, 0.42f),
-            "CAM" to Pair(0.43f, 0.27f),
-            "ST" to Pair(0.43f, 0.12f)
+            "GK" to Pair(0.44f, 0.82f),
+            "LB" to Pair(0.14f, 0.62f),
+            "LCB" to Pair(0.29f, 0.72f),
+            "RCB" to Pair(0.59f, 0.72f),
+            "RB" to Pair(0.74f, 0.62f),
+            "LM" to Pair(0.19f, 0.42f),
+            "LCM" to Pair(0.34f, 0.47f),
+            "RCM" to Pair(0.54f, 0.47f),
+            "RM" to Pair(0.69f, 0.42f),
+            "CAM" to Pair(0.44f, 0.27f),
+            "ST" to Pair(0.44f, 0.12f)
         )
         else -> emptyMap()
     }
