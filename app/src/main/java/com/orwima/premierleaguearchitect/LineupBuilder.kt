@@ -308,69 +308,69 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
             "RW" to Pair(0.68f, 0.17f)
         )
         "4-2-3-1" -> mapOf(
-            "GK" to Pair(0.44f, 0.85f),
-            "LB" to Pair(0.14f, 0.65f),
-            "LCB" to Pair(0.29f, 0.75f),
-            "RCB" to Pair(0.59f, 0.75f),
-            "RB" to Pair(0.74f, 0.65f),
-            "LDM" to Pair(0.29f, 0.55f),
-            "RDM" to Pair(0.59f, 0.55f),
-            "LM" to Pair(0.18f, 0.30f),
-            "CAM" to Pair(0.44f, 0.30f),
-            "RM" to Pair(0.70f, 0.30f),
-            "ST" to Pair(0.44f, 0.15f)
+            "GK" to Pair(0.43f, 0.82f),
+            "LB" to Pair(0.13f, 0.62f),
+            "LCB" to Pair(0.28f, 0.72f),
+            "RCB" to Pair(0.58f, 0.72f),
+            "RB" to Pair(0.73f, 0.62f),
+            "LDM" to Pair(0.28f, 0.52f),
+            "RDM" to Pair(0.58f, 0.52f),
+            "LM" to Pair(0.18f, 0.32f),
+            "CAM" to Pair(0.43f, 0.32f),
+            "RM" to Pair(0.68f, 0.32f),
+            "ST" to Pair(0.43f, 0.12f)
         )
         "4-4-2" -> mapOf(
-            "GK" to Pair(0.44f, 0.85f),
-            "LB" to Pair(0.14f, 0.65f),
-            "LCB" to Pair(0.29f, 0.75f),
-            "RCB" to Pair(0.59f, 0.75f),
-            "RB" to Pair(0.74f, 0.65f),
-            "LM" to Pair(0.16f, 0.45f),
-            "LCM" to Pair(0.34f, 0.50f),
-            "RCM" to Pair(0.54f, 0.50f),
-            "RM" to Pair(0.72f, 0.45f),
-            "LST" to Pair(0.34f, 0.20f),
-            "RST" to Pair(0.54f, 0.20f)
+            "GK" to Pair(0.43f, 0.82f),
+            "LB" to Pair(0.13f, 0.62f),
+            "LCB" to Pair(0.28f, 0.72f),
+            "RCB" to Pair(0.58f, 0.72f),
+            "RB" to Pair(0.73f, 0.62f),
+            "LM" to Pair(0.18f, 0.42f),
+            "LCM" to Pair(0.33f, 0.47f),
+            "RCM" to Pair(0.53f, 0.47f),
+            "RM" to Pair(0.68f, 0.42f),
+            "LST" to Pair(0.33f, 0.22f),
+            "RST" to Pair(0.53f, 0.22f)
         )
         "3-4-2-1" -> mapOf(
-            "GK" to Pair(0.44f, 0.85f),
-            "LCB" to Pair(0.24f, 0.70f),
-            "CB" to Pair(0.44f, 0.70f),
-            "RCB" to Pair(0.64f, 0.70f),
-            "LM" to Pair(0.16f, 0.50f),
-            "LDM" to Pair(0.34f, 0.50f),
-            "RDM" to Pair(0.54f, 0.50f),
-            "RM" to Pair(0.72f, 0.50f),
-            "LAM" to Pair(0.28f, 0.30f),
-            "RAM" to Pair(0.60f, 0.30f),
-            "ST" to Pair(0.44f, 0.15f)
+            "GK" to Pair(0.43f, 0.82f),
+            "LCB" to Pair(0.23f, 0.72f),
+            "CB" to Pair(0.43f, 0.72f),
+            "RCB" to Pair(0.63f, 0.72f),
+            "LM" to Pair(0.18f, 0.47f),
+            "LDM" to Pair(0.33f, 0.52f),
+            "RDM" to Pair(0.53f, 0.52f),
+            "RM" to Pair(0.68f, 0.47f),
+            "LAM" to Pair(0.28f, 0.27f),
+            "RAM" to Pair(0.58f, 0.27f),
+            "ST" to Pair(0.43f, 0.12f)
         )
         "3-5-2" -> mapOf(
-            "GK" to Pair(0.44f, 0.85f),
-            "LCB" to Pair(0.24f, 0.70f),
-            "CB" to Pair(0.44f, 0.70f),
-            "RCB" to Pair(0.64f, 0.70f),
-            "LM" to Pair(0.16f, 0.45f),
-            "LDM" to Pair(0.32f, 0.45f),
-            "CDM" to Pair(0.44f, 0.50f),
-            "RDM" to Pair(0.56f, 0.45f),
-            "RM" to Pair(0.72f, 0.45f),
-            "LS" to Pair(0.34f, 0.20f),
-            "RS" to Pair(0.54f, 0.20f)
+            "GK" to Pair(0.43f, 0.82f),
+            "LCB" to Pair(0.23f, 0.72f),
+            "CB" to Pair(0.43f, 0.72f),
+            "RCB" to Pair(0.63f, 0.72f),
+            "LM" to Pair(0.18f, 0.42f),
+            "LDM" to Pair(0.33f, 0.47f),
+            "CDM" to Pair(0.43f, 0.52f),
+            "RDM" to Pair(0.53f, 0.47f),
+            "RM" to Pair(0.68f, 0.42f),
+            "LST" to Pair(0.33f, 0.22f),
+            "RST" to Pair(0.53f, 0.22f)
         )
         "4-4-1-1" -> mapOf(
-            "GK" to Pair(0.44f, 0.85f),
-            "LB" to Pair(0.14f, 0.65f),
-            "LCB" to Pair(0.29f, 0.75f),
-            "RCB" to Pair(0.59f, 0.75f),
-            "RB" to Pair(0.74f, 0.65f),
-            "LM" to Pair(0.16f, 0.45f),
-            "LCM" to Pair(0.34f, 0.50f),
-            "RCM" to Pair(0.54f, 0.50f),
-            "RM" to Pair(0.72f, 0.45f),
-            "CAM" to Pair(0.44f, 0.30f),
-            "ST" to Pair(0.44f, 0.15f)
+            "GK" to Pair(0.43f, 0.82f),
+            "LB" to Pair(0.13f, 0.62f),
+            "LCB" to Pair(0.28f, 0.72f),
+            "RCB" to Pair(0.58f, 0.72f),
+            "RB" to Pair(0.73f, 0.62f),
+            "LM" to Pair(0.18f, 0.42f),
+            "LCM" to Pair(0.33f, 0.47f),
+            "RCM" to Pair(0.53f, 0.47f),
+            "RM" to Pair(0.68f, 0.42f),
+            "CAM" to Pair(0.43f, 0.27f),
+            "ST" to Pair(0.43f, 0.12f)
         )
         else -> emptyMap()
     }
