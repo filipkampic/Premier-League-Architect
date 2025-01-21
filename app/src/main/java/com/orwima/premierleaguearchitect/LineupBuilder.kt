@@ -1,6 +1,9 @@
 package com.orwima.premierleaguearchitect
 
-import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,12 +27,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -58,10 +58,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 @Preview(showBackground = true)
@@ -83,8 +79,6 @@ fun LineupBuilder(
     var selectedFormation by remember { mutableStateOf(availableFormations.first()) }
     var clickedPosition by remember { mutableStateOf<String?>(null) }
     var isSidebarVisible by remember { mutableStateOf(false) }
-    var drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
 
     var lineupName by remember { mutableStateOf("LINEUP NAME") }
     var isNameFocused by remember { mutableStateOf(false) }
@@ -208,7 +202,8 @@ fun LineupBuilder(
                     ) {
                         Image(
                             painter = painterResource(
-                                id = if (position == "GK") teamGoalkeeperJersey else teamJersey),
+                                id = if (position == "GK") teamGoalkeeperJersey else teamJersey
+                            ),
                             contentDescription = position
                         )
                     }
@@ -261,301 +256,76 @@ fun LineupBuilder(
             }
         }
 
-        if (isSidebarVisible && clickedPosition != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.6f))
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        isSidebarVisible = false
-                    }
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(200.dp)
-                    .align(Alignment.CenterEnd)
-                    .background(color = Color(0xFF38003C))
-                    .padding(16.dp)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        // Do nothing, prevent closing sidebar when is clicked
-                    }
-            ) {
-                Column(
-                    modifier = Modifier.horizontalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(24.dp))
-                    playersByPosition[clickedPosition]?.forEach { player ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color(0xFF2A2A40), shape = RoundedCornerShape(8.dp))
-                                .clickable {
-                                    println("Selected player: $player")
-                                }
-                                .padding(12.dp),
-                            contentAlignment = Alignment.Center
+        if (clickedPosition != null) {
+            if (isSidebarVisible) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.6f))
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
                         ) {
-                            Text(
-                                text = player,
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                                color = Color.White
-                            )
+                            isSidebarVisible = false
                         }
-                    }
-                }
+                )
             }
-        }
-    }
-
-    /*
-    ModalNavigationDrawer(
-        drawerContent = {
-            StyledPlayerDrawer(
-                position = clickedPosition,
-                playersByPosition = playersByPosition,
-                onPlayerSelected = { selectedPlayer ->
-                    scope.launch {
-                        drawerState.open()
-                    }
-                },
-                onDismiss = {
-                    scope.launch {
-                        drawerState.close()
-                    }
-                }
-            )
-        },
-        drawerState = drawerState,
-        content = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0XFF252431))
+            AnimatedVisibility(
+                visible = isSidebarVisible,
+                enter = slideInHorizontally(
+                    initialOffsetX = { fullWidth -> fullWidth },
+                    animationSpec = tween(durationMillis = 200)
+                ),
+                exit = slideOutHorizontally(
+                    targetOffsetX = { fullWidth -> fullWidth },
+                    animationSpec = tween(durationMillis = 200)
+                )
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.pl_bg),
-                    contentDescription = "Premier League Logo Background",
-                    contentScale = ContentScale.Fit,
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .graphicsLayer(alpha = 0.4f)
-                        .scale(3.2f)
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.pitch),
-                    contentDescription = "Pitch",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = teamName.uppercase(),
-                        fontSize = 40.sp,
-                        fontFamily = FontFamily(Font(R.font.bebas_neue)),
-                        color = Color(0XFF00FF85),
-                        modifier = Modifier
-                            .padding(top = 16.dp)
-                    )
-                    Image(
-                        painter = painterResource(id = teamLogo),
-                        contentDescription = "$teamName Logo",
-                        modifier = Modifier.size(80.dp)
-                    )
-                    TextField(
-                        value = lineupName,
-                        onValueChange = { lineupName = it },
-                        textStyle = TextStyle(
-                            fontSize = 24.sp,
-                            fontFamily = FontFamily(Font(R.font.bebas_neue)),
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-                        ),
-                        singleLine = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onFocusChanged { focusState ->
-                                if (focusState.isFocused) {
-                                    if (!isNameFocused) {
-                                        lineupName = ""
-                                        isNameFocused = true
-                                    }
-                                }
-                            },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
-                    )
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                            .height(2.dp)
-                            .background(Color.White)
-                            .padding(top = 8.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f) // Ensure the box is square
-                            .onGloballyPositioned { layoutCoordinates ->
-                                containerWidth = layoutCoordinates.size.width
-                                containerHeight = layoutCoordinates.size.height
-
-                                responsivePositions = calculateResponsivePositions(
-                                    positions = positions,
-                                    containerWidth = containerWidth,
-                                    containerHeight = containerHeight,
-                                    density = density
-                                )
-                            }
-                    ) {
-                        responsivePositions.forEach { (position, coordinates) ->
-                            val iconSize = with(density) { (containerWidth * 0.125f).toDp() }
-
-                            Box(
-                                modifier = Modifier
-                                    .offset(
-                                        x = coordinates.first,
-                                        y = coordinates.second
-                                    )
-                                    .size(iconSize)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-
-                                    ) {
-                                        clickedPosition = position
-                                        scope.launch {
-                                            drawerState.open()
-                                        }
-                                        println("Clicked on position: $position")
-                                    },
-                                contentAlignment = Alignment.Center
+                            .fillMaxHeight()
+                            .width(200.dp)
+                            .align(Alignment.CenterEnd)
+                            .background(color = Color(0xFF38003C))
+                            .padding(16.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
                             ) {
-                                Image(
-                                    painter = painterResource(
-                                        id = if (position == "GK") teamGoalkeeperJersey else teamJersey),
-                                    contentDescription = position
-                                )
+                                // Do nothing, prevent closing sidebar when is clicked
                             }
-                        }
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
                     ) {
-                        DropdownMenuComponent(
-                            selectedFormation = selectedFormation,
-                            availableFormations = availableFormations,
-                            onFormationSelected = { selectedFormation = it }
-                        )
-
                         Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier.horizontalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Button(
-                                onClick = onSave,
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF40C5C)),
-                                modifier = Modifier
-                                    .width(screenWidth * 0.3f)
-                            ) {
-                                Text(
-                                    text = "SAVE",
-                                    color = Color.White
-                                )
-                            }
-                            Button(
-                                onClick = onLeave,
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults
-                                    .buttonColors(containerColor = Color.White),
-                                modifier = Modifier
-                                    .width(screenWidth * 0.3f)
-                            ) {
-                                Text(
-                                    text = "LEAVE",
-                                    color = Color.Black
-                                )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            playersByPosition[clickedPosition]?.forEach { player ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFF2A2A40), shape = RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            println("Selected player: $player")
+                                        }
+                                        .padding(12.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = player,
+                                        fontSize = 16.sp,
+                                        fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                                        color = Color.White
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
-    )*/
-}
-
-@Composable
-fun DropdownMenuComponent(
-    selectedFormation: String,
-    availableFormations: List<String>,
-    onFormationSelected: (String) -> Unit
-) {
-    val screenWidth = LocalDensity.current.run { LocalConfiguration.current.screenWidthDp.dp }
-    val dropdownWidth = screenWidth * 0.4f
-
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier
-            .width(dropdownWidth)
-            .height(36.dp)
-            .background(Color.White, shape = RoundedCornerShape(4.dp))
-            .clickable { expanded = true },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = selectedFormation,
-            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-            fontSize = 14.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.White)
-        ) {
-            availableFormations.forEach { formation ->
-                DropdownMenuItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(32.dp),
-                    text = {
-                        Text(
-                            text = formation,
-                            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                            fontSize = 14.sp,
-                            color = Color.Black
-                        )
-                    },
-                    onClick = {
-                        expanded = false
-                        onFormationSelected(formation)
-                    }
-                )
             }
         }
     }
@@ -645,6 +415,60 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
     }
 }
 
+@Composable
+fun DropdownMenuComponent(
+    selectedFormation: String,
+    availableFormations: List<String>,
+    onFormationSelected: (String) -> Unit
+) {
+    val screenWidth = LocalDensity.current.run { LocalConfiguration.current.screenWidthDp.dp }
+    val dropdownWidth = screenWidth * 0.4f
+
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .width(dropdownWidth)
+            .height(36.dp)
+            .background(Color.White, shape = RoundedCornerShape(4.dp))
+            .clickable { expanded = true },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = selectedFormation,
+            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+            fontSize = 14.sp,
+            color = Color.Black,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color.White)
+        ) {
+            availableFormations.forEach { formation ->
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(32.dp),
+                    text = {
+                        Text(
+                            text = formation,
+                            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                            fontSize = 14.sp,
+                            color = Color.Black
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        onFormationSelected(formation)
+                    }
+                )
+            }
+        }
+    }
+}
+
 fun calculateResponsivePositions(
     positions: Map<String, Pair<Float, Float>>,
     containerWidth: Int,
@@ -657,78 +481,6 @@ fun calculateResponsivePositions(
                 (coordinates.first * containerWidth).toDp(),
                 (coordinates.second * containerHeight).toDp()
             )
-        }
-    }
-}
-
-@SuppressLint("UnrememberedMutableInteractionSource")
-@Composable
-fun StyledPlayerDrawer(
-    position: String?,
-    playersByPosition: Map<String, List<String>>,
-    onPlayerSelected: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    if (position != null) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.6f))
-                .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-                    onDismiss()
-                }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(200.dp)
-                    .background(
-                        color = Color(0xFF38003C),
-                    )
-                    .align(Alignment.CenterEnd)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "Position Players",
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.bebas_neue)),
-                    color = Color.White,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                playersByPosition[position]?.forEach { player ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFF2A2A40), shape = RoundedCornerShape(8.dp))
-                            .clickable {
-                                onPlayerSelected(player)
-                            }
-                            .padding(12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = player,
-                            fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                            color = Color.White
-                        )
-                    }
-                }
-                Button(
-                    onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF40C5C)),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = "CLOSE",
-                        color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.montserrat_regular))
-                    )
-                }
-            }
         }
     }
 }
