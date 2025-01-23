@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -94,8 +95,16 @@ fun LineupBuilder(
     val playersByPosition = mapOf(
         "GK" to listOf("Player 1", "Player 2", "Player 3"),
         "LB" to listOf("Player 4", "Player 5"),
-        "ST" to listOf("Player 6", "Player 7", "Player 8")
+        "ST" to listOf("Kai Havertz", "Gabriel Jesus")
     )
+
+    val takenPlayers = remember { mutableStateOf(setOf<String>())}
+    val playerDetails = mapOf(
+        "Kai Havertz" to R.drawable.havertz,
+        "Gabriel Jesus" to R.drawable.g_jesus
+    )
+    val positionToPlayer = remember { mutableStateOf(mutableMapOf<String, String>()) }
+
 
     Box(
         modifier = Modifier.fillMaxSize().background(Color(0XFF252431))
@@ -185,27 +194,54 @@ fun LineupBuilder(
             ) {
                 responsivePositions.forEach { (position, coordinates) ->
                     val iconSize = with(density) { (containerWidth * 0.125f).toDp() }
+                    val selectedPlayer = positionToPlayer.value[position]
+                    val playerImage = playerDetails[selectedPlayer]
 
-                    Box(
+                    Column(
                         modifier = Modifier
                             .offset(
                                 x = coordinates.first,
                                 y = coordinates.second
                             )
-                            .size(iconSize)
+                            .width(iconSize)
                             .clickable {
                                 clickedPosition = position
                                 isSidebarVisible = true
                                 println("Clicked on position: $position")
                             },
-                        contentAlignment = Alignment.Center
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painter = painterResource(
-                                id = if (position == "GK") teamGoalkeeperJersey else teamJersey
-                            ),
-                            contentDescription = position
-                        )
+                        Box(
+                            modifier = Modifier.size(iconSize),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (selectedPlayer != null) {
+                                Image(
+                                    painter = painterResource(
+                                        id = playerImage ?: (if (position == "GK") teamGoalkeeperJersey else teamJersey)
+                                    ),
+                                    contentDescription = selectedPlayer
+                                )
+                            } else {
+                                Image(
+                                    painter = painterResource(
+                                        id = if (position == "GK") teamGoalkeeperJersey else teamJersey
+                                    ),
+                                    contentDescription = position
+                                )
+                            }
+                        }
+
+                        selectedPlayer?.let {
+                            Text(
+                                text = it,
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                                color = Color.White,
+                                modifier = Modifier.padding(top = 4.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
@@ -300,26 +336,53 @@ fun LineupBuilder(
                             }
                     ) {
                         Column(
-                            modifier = Modifier.horizontalScroll(rememberScrollState()),
+                            modifier = Modifier
+                                .padding(top = 24.dp)
+                                .horizontalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Spacer(modifier = Modifier.height(24.dp))
                             playersByPosition[clickedPosition]?.forEach { player ->
-                                Box(
+                                val isSelectedForPosition = positionToPlayer.value[clickedPosition] == player
+                                val playerImage = playerDetails[player]
+
+                                Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Color(0xFF2A2A40), shape = RoundedCornerShape(8.dp))
+                                        .background(
+                                            color = if (isSelectedForPosition) Color.White else Color(0xFF2A2A40),
+                                            shape = RectangleShape
+                                        )
                                         .clickable {
-                                            println("Selected player: $player")
+                                            val previouslySelectedPlayer = positionToPlayer.value[clickedPosition]
+                                            if (player == previouslySelectedPlayer) {
+                                                takenPlayers.value = takenPlayers.value - player
+                                                positionToPlayer.value.remove(clickedPosition)
+                                            } else {
+                                                previouslySelectedPlayer?.let {
+                                                    takenPlayers.value = takenPlayers.value - it
+                                                }
+                                                takenPlayers.value = takenPlayers.value + player
+                                                positionToPlayer.value[clickedPosition!!] = player
+                                            }
+                                            isSidebarVisible = false
                                         }
                                         .padding(12.dp),
-                                    contentAlignment = Alignment.Center
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
+                                    playerImage?.let {
+                                        Image(
+                                            painter = painterResource(id = it),
+                                            contentDescription = player,
+                                            modifier = Modifier.size(48.dp)
+                                        )
+                                    }
                                     Text(
                                         text = player,
                                         fontSize = 16.sp,
                                         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                                        color = Color.White
+                                        color = if (isSelectedForPosition) Color.Black else Color.White
                                     )
                                 }
                             }
