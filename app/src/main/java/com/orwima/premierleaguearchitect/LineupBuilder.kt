@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.orwima.premierleaguearchitect.PlayerRepository.allPlayers
 
 @Composable
 @Preview(showBackground = true)
@@ -93,17 +94,38 @@ fun LineupBuilder(
     var containerWidth by remember { mutableStateOf(0) }
     var containerHeight by remember { mutableStateOf(0) }
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-
-    val playersByPosition = mapOf(
-        "GK" to listOf("Player 1", "Player 2", "Player 3"),
-        "LB" to listOf("Player 4", "Player 5"),
-        "ST" to listOf("K. Havertz", "G. Jesus")
-    )
+/*
+            "GK" to Pair(0.41f, 0.82f),
+            "LB" to Pair(0.11f, 0.62f),
+            "LCB" to Pair(0.26f, 0.72f),
+            "RCB" to Pair(0.56f, 0.72f),
+            "RB" to Pair(0.71f, 0.62f),
+            "LCM" to Pair(0.21f, 0.42f),
+            "CDM" to Pair(0.41f, 0.52f),
+            "RCM" to Pair(0.61f, 0.42f),
+            "LW" to Pair(0.16f, 0.17f),
+            "ST" to Pair(0.41f, 0.12f),
+            "RW" to Pair(0.66f, 0.17f)
+* */
+    val playersByPosition = allPlayers
+        .filter { it.team == teamName }
+        .groupBy { player ->
+            when (player.name) {
+                "K. Havertz", "G. Jesus" -> "ST"
+                "R. Sterling", "L. Trossard", "G. Martinelli" -> "LW"
+                "B. Saka", "R. Sterling" -> "RW"
+                else -> "GK"
+            }
+        }
 
     val takenPlayers = remember { mutableStateOf(setOf<String>())}
     val playerDetails = mapOf(
         "K. Havertz" to R.drawable.havertz,
-        "G. Jesus" to R.drawable.g_jesus
+        "G. Jesus" to R.drawable.g_jesus,
+        "R. Sterling" to R.drawable.sterling,
+        "B. Saka" to R.drawable.saka,
+        "L. Trossard" to R.drawable.trossard,
+        "G. Martinelli" to R.drawable.martinelli,
     )
     val positionToPlayer = remember { mutableStateOf(mutableMapOf<String, String>()) }
 
@@ -343,8 +365,8 @@ fun LineupBuilder(
                         ) {
                             Spacer(modifier = Modifier.height(24.dp))
                             playersByPosition[clickedPosition]?.forEach { player ->
-                                val isSelectedForPosition = positionToPlayer.value[clickedPosition] == player
-                                val playerImage = playerDetails[player]
+                                val isSelectedForPosition = positionToPlayer.value[clickedPosition] == player.name
+                                val playerImage = playerDetails[player.name]
                                 val rowHeight = 56.dp
 
                                 Row(
@@ -356,15 +378,15 @@ fun LineupBuilder(
                                         )
                                         .clickable {
                                             val previouslySelectedPlayer = positionToPlayer.value[clickedPosition]
-                                            if (player == previouslySelectedPlayer) {
-                                                takenPlayers.value = takenPlayers.value - player
+                                            if (player.name == previouslySelectedPlayer) {
+                                                takenPlayers.value = takenPlayers.value - player.name
                                                 positionToPlayer.value.remove(clickedPosition)
                                             } else {
                                                 previouslySelectedPlayer?.let {
                                                     takenPlayers.value = takenPlayers.value - it
                                                 }
-                                                takenPlayers.value = takenPlayers.value + player
-                                                positionToPlayer.value[clickedPosition!!] = player
+                                                takenPlayers.value = takenPlayers.value + player.name
+                                                positionToPlayer.value[clickedPosition!!] = player.name
                                             }
                                             isSidebarVisible = false
                                         }
@@ -375,12 +397,12 @@ fun LineupBuilder(
                                     playerImage?.let {
                                         Image(
                                             painter = painterResource(id = it),
-                                            contentDescription = player,
+                                            contentDescription = player.name,
                                             modifier = Modifier.size(rowHeight * 0.6f)
                                         )
                                     }
                                     Text(
-                                        text = player,
+                                        text = player.name,
                                         fontSize = (rowHeight.value * 0.3).sp,
                                         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                                         color = if (isSelectedForPosition) Color.Black else Color.White
