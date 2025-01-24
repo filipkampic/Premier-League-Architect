@@ -42,8 +42,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -95,13 +97,13 @@ fun LineupBuilder(
     val playersByPosition = mapOf(
         "GK" to listOf("Player 1", "Player 2", "Player 3"),
         "LB" to listOf("Player 4", "Player 5"),
-        "ST" to listOf("Kai Havertz", "Gabriel Jesus")
+        "ST" to listOf("K. Havertz", "G. Jesus")
     )
 
     val takenPlayers = remember { mutableStateOf(setOf<String>())}
     val playerDetails = mapOf(
-        "Kai Havertz" to R.drawable.havertz,
-        "Gabriel Jesus" to R.drawable.g_jesus
+        "K. Havertz" to R.drawable.havertz,
+        "G. Jesus" to R.drawable.g_jesus
     )
     val positionToPlayer = remember { mutableStateOf(mutableMapOf<String, String>()) }
 
@@ -203,11 +205,10 @@ fun LineupBuilder(
                                 x = coordinates.first,
                                 y = coordinates.second
                             )
-                            .width(iconSize)
+                            .width(iconSize * 1.5f)
                             .clickable {
                                 clickedPosition = position
                                 isSidebarVisible = true
-                                println("Clicked on position: $position")
                             },
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -235,7 +236,7 @@ fun LineupBuilder(
                         selectedPlayer?.let {
                             Text(
                                 text = it,
-                                fontSize = 12.sp,
+                                fontSize = (iconSize.value * 0.2).sp,
                                 fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                                 color = Color.White,
                                 modifier = Modifier.padding(top = 4.dp),
@@ -327,7 +328,6 @@ fun LineupBuilder(
                             .width(200.dp)
                             .align(Alignment.CenterEnd)
                             .background(color = Color(0xFF38003C))
-                            .padding(16.dp)
                             .clickable(
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
@@ -345,12 +345,13 @@ fun LineupBuilder(
                             playersByPosition[clickedPosition]?.forEach { player ->
                                 val isSelectedForPosition = positionToPlayer.value[clickedPosition] == player
                                 val playerImage = playerDetails[player]
+                                val rowHeight = 56.dp
 
                                 Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .width(200.dp)
                                         .background(
-                                            color = if (isSelectedForPosition) Color.White else Color(0xFF2A2A40),
+                                            color = if (isSelectedForPosition) Color.White else Color.Transparent,
                                             shape = RectangleShape
                                         )
                                         .clickable {
@@ -375,12 +376,12 @@ fun LineupBuilder(
                                         Image(
                                             painter = painterResource(id = it),
                                             contentDescription = player,
-                                            modifier = Modifier.size(48.dp)
+                                            modifier = Modifier.size(rowHeight * 0.6f)
                                         )
                                     }
                                     Text(
                                         text = player,
-                                        fontSize = 16.sp,
+                                        fontSize = (rowHeight.value * 0.3).sp,
                                         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                                         color = if (isSelectedForPosition) Color.Black else Color.White
                                     )
@@ -397,82 +398,82 @@ fun LineupBuilder(
 fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
     return when(formation) {
         "4-3-3" -> mapOf(
-            "GK" to Pair(0.44f, 0.82f),
-            "LB" to Pair(0.14f, 0.62f),
-            "LCB" to Pair(0.29f, 0.72f),
-            "RCB" to Pair(0.59f, 0.72f),
-            "RB" to Pair(0.74f, 0.62f),
-            "LCM" to Pair(0.24f, 0.42f),
-            "CDM" to Pair(0.44f, 0.52f),
-            "RCM" to Pair(0.64f, 0.42f),
-            "LW" to Pair(0.19f, 0.17f),
-            "ST" to Pair(0.44f, 0.12f),
-            "RW" to Pair(0.69f, 0.17f)
+            "GK" to Pair(0.41f, 0.82f),
+            "LB" to Pair(0.11f, 0.62f),
+            "LCB" to Pair(0.26f, 0.72f),
+            "RCB" to Pair(0.56f, 0.72f),
+            "RB" to Pair(0.71f, 0.62f),
+            "LCM" to Pair(0.21f, 0.42f),
+            "CDM" to Pair(0.41f, 0.52f),
+            "RCM" to Pair(0.61f, 0.42f),
+            "LW" to Pair(0.16f, 0.17f),
+            "ST" to Pair(0.41f, 0.12f),
+            "RW" to Pair(0.66f, 0.17f)
         )
         "4-2-3-1" -> mapOf(
-            "GK" to Pair(0.44f, 0.82f),
-            "LB" to Pair(0.14f, 0.62f),
-            "LCB" to Pair(0.29f, 0.72f),
-            "RCB" to Pair(0.59f, 0.72f),
-            "RB" to Pair(0.74f, 0.62f),
-            "LDM" to Pair(0.29f, 0.52f),
-            "RDM" to Pair(0.59f, 0.52f),
-            "LM" to Pair(0.19f, 0.32f),
-            "CAM" to Pair(0.44f, 0.32f),
-            "RM" to Pair(0.69f, 0.32f),
-            "ST" to Pair(0.44f, 0.12f)
+            "GK" to Pair(0.41f, 0.82f),
+            "LB" to Pair(0.11f, 0.62f),
+            "LCB" to Pair(0.26f, 0.72f),
+            "RCB" to Pair(0.56f, 0.72f),
+            "RB" to Pair(0.71f, 0.62f),
+            "LDM" to Pair(0.26f, 0.52f),
+            "RDM" to Pair(0.56f, 0.52f),
+            "LM" to Pair(0.16f, 0.32f),
+            "CAM" to Pair(0.41f, 0.32f),
+            "RM" to Pair(0.66f, 0.32f),
+            "ST" to Pair(0.41f, 0.12f)
         )
         "4-4-2" -> mapOf(
-            "GK" to Pair(0.44f, 0.82f),
-            "LB" to Pair(0.14f, 0.62f),
-            "LCB" to Pair(0.29f, 0.72f),
-            "RCB" to Pair(0.59f, 0.72f),
-            "RB" to Pair(0.74f, 0.62f),
-            "LM" to Pair(0.19f, 0.42f),
-            "LCM" to Pair(0.34f, 0.47f),
-            "RCM" to Pair(0.54f, 0.47f),
-            "RM" to Pair(0.69f, 0.42f),
-            "LST" to Pair(0.34f, 0.22f),
-            "RST" to Pair(0.54f, 0.22f)
+            "GK" to Pair(0.41f, 0.82f),
+            "LB" to Pair(0.11f, 0.62f),
+            "LCB" to Pair(0.26f, 0.72f),
+            "RCB" to Pair(0.56f, 0.72f),
+            "RB" to Pair(0.71f, 0.62f),
+            "LM" to Pair(0.16f, 0.42f),
+            "LCM" to Pair(0.31f, 0.47f),
+            "RCM" to Pair(0.51f, 0.47f),
+            "RM" to Pair(0.66f, 0.42f),
+            "LST" to Pair(0.31f, 0.22f),
+            "RST" to Pair(0.51f, 0.22f)
         )
         "3-4-2-1" -> mapOf(
-            "GK" to Pair(0.44f, 0.82f),
-            "LCB" to Pair(0.24f, 0.69f),
-            "CB" to Pair(0.44f, 0.69f),
-            "RCB" to Pair(0.64f, 0.69f),
-            "LM" to Pair(0.19f, 0.47f),
-            "LDM" to Pair(0.34f, 0.52f),
-            "RDM" to Pair(0.54f, 0.52f),
-            "RM" to Pair(0.69f, 0.47f),
-            "LAM" to Pair(0.29f, 0.27f),
-            "RAM" to Pair(0.59f, 0.27f),
-            "ST" to Pair(0.44f, 0.12f)
+            "GK" to Pair(0.41f, 0.82f),
+            "LCB" to Pair(0.21f, 0.69f),
+            "CB" to Pair(0.41f, 0.69f),
+            "RCB" to Pair(0.61f, 0.69f),
+            "LM" to Pair(0.16f, 0.47f),
+            "LDM" to Pair(0.31f, 0.52f),
+            "RDM" to Pair(0.51f, 0.52f),
+            "RM" to Pair(0.66f, 0.47f),
+            "LAM" to Pair(0.26f, 0.27f),
+            "RAM" to Pair(0.56f, 0.27f),
+            "ST" to Pair(0.41f, 0.12f)
         )
         "3-5-2" -> mapOf(
-            "GK" to Pair(0.44f, 0.82f),
-            "LCB" to Pair(0.24f, 0.69f),
-            "CB" to Pair(0.44f, 0.69f),
-            "RCB" to Pair(0.64f, 0.69f),
-            "LM" to Pair(0.18f, 0.42f),
-            "LDM" to Pair(0.33f, 0.47f),
-            "CDM" to Pair(0.44f, 0.52f),
-            "RDM" to Pair(0.55f, 0.47f),
-            "RM" to Pair(0.70f, 0.42f),
-            "LST" to Pair(0.34f, 0.22f),
-            "RST" to Pair(0.54f, 0.22f)
+            "GK" to Pair(0.41f, 0.82f),
+            "LCB" to Pair(0.21f, 0.69f),
+            "CB" to Pair(0.41f, 0.69f),
+            "RCB" to Pair(0.61f, 0.69f),
+            "LM" to Pair(0.15f, 0.42f),
+            "LDM" to Pair(0.30f, 0.47f),
+            "CDM" to Pair(0.41f, 0.52f),
+            "RDM" to Pair(0.52f, 0.47f),
+            "RM" to Pair(0.67f, 0.42f),
+            "LST" to Pair(0.31f, 0.22f),
+            "RST" to Pair(0.51f, 0.22f)
         )
         "4-4-1-1" -> mapOf(
-            "GK" to Pair(0.44f, 0.82f),
-            "LB" to Pair(0.14f, 0.62f),
-            "LCB" to Pair(0.29f, 0.72f),
-            "RCB" to Pair(0.59f, 0.72f),
-            "RB" to Pair(0.74f, 0.62f),
-            "LM" to Pair(0.19f, 0.42f),
-            "LCM" to Pair(0.34f, 0.47f),
-            "RCM" to Pair(0.54f, 0.47f),
-            "RM" to Pair(0.69f, 0.42f),
-            "CAM" to Pair(0.44f, 0.27f),
-            "ST" to Pair(0.44f, 0.12f)
+            "GK" to Pair(0.41f, 0.82f),
+            "LB" to Pair(0.11f, 0.62f),
+            "LCB" to Pair(0.26f, 0.72f),
+            "RCB" to Pair(0.56f, 0.72f),
+            "RB" to Pair(0.71f, 0.62f),
+            "LM" to Pair(0.16f, 0.42f),
+            "LCM" to Pair(0.31f, 0.47f),
+            "RCM" to Pair(0.51f, 0.47f),
+            "RM" to Pair(0.66f, 0.42f),
+            "CAM" to Pair(0.41f, 0.27f),
+            "ST" to Pair(0.41f, 0.12f)
         )
         else -> emptyMap()
     }
