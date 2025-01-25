@@ -42,10 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -94,39 +92,18 @@ fun LineupBuilder(
     var containerWidth by remember { mutableStateOf(0) }
     var containerHeight by remember { mutableStateOf(0) }
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-/*
-            "GK" to Pair(0.41f, 0.82f),
-            "LB" to Pair(0.11f, 0.62f),
-            "LCB" to Pair(0.26f, 0.72f),
-            "RCB" to Pair(0.56f, 0.72f),
-            "RB" to Pair(0.71f, 0.62f),
-            "LCM" to Pair(0.21f, 0.42f),
-            "CDM" to Pair(0.41f, 0.52f),
-            "RCM" to Pair(0.61f, 0.42f),
-            "LW" to Pair(0.16f, 0.17f),
-            "ST" to Pair(0.41f, 0.12f),
-            "RW" to Pair(0.66f, 0.17f)
-* */
+
     val playersByPosition = allPlayers
         .filter { it.team == teamName }
-        .groupBy { player ->
-            when (player.name) {
-                "K. Havertz", "G. Jesus" -> "ST"
-                "R. Sterling", "L. Trossard", "G. Martinelli" -> "LW"
-                "B. Saka", "R. Sterling" -> "RW"
-                else -> "GK"
-            }
+        .flatMap { player ->
+            player.positions.map { position -> position to player }
         }
+        .groupBy(
+            keySelector = { (position, _) -> position },
+            valueTransform = { (_, player) -> player }
+        )
 
     val takenPlayers = remember { mutableStateOf(setOf<String>())}
-    val playerDetails = mapOf(
-        "K. Havertz" to R.drawable.havertz,
-        "G. Jesus" to R.drawable.g_jesus,
-        "R. Sterling" to R.drawable.sterling,
-        "B. Saka" to R.drawable.saka,
-        "L. Trossard" to R.drawable.trossard,
-        "G. Martinelli" to R.drawable.martinelli,
-    )
     val positionToPlayer = remember { mutableStateOf(mutableMapOf<String, String>()) }
 
 
@@ -203,7 +180,7 @@ fun LineupBuilder(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f) // Ensure the box is square
+                    .aspectRatio(1f)
                     .onGloballyPositioned { layoutCoordinates ->
                         containerWidth = layoutCoordinates.size.width
                         containerHeight = layoutCoordinates.size.height
@@ -217,9 +194,12 @@ fun LineupBuilder(
                     }
             ) {
                 responsivePositions.forEach { (position, coordinates) ->
-                    val iconSize = with(density) { (containerWidth * 0.125f).toDp() }
+                    val basePosition = position.takeWhile { it.isLetter() }
+                    val availablePlayers = playersByPosition[basePosition]
+
                     val selectedPlayer = positionToPlayer.value[position]
-                    val playerImage = playerDetails[selectedPlayer]
+                    val iconSize = with(density) { (containerWidth * 0.125f).toDp() }
+                    val playerImage = availablePlayers?.find { it.name == selectedPlayer }?.image
 
                     Column(
                         modifier = Modifier
@@ -229,7 +209,7 @@ fun LineupBuilder(
                             )
                             .width(iconSize * 1.5f)
                             .clickable {
-                                clickedPosition = position
+                                clickedPosition = position // TO-DO nešto ne valja kad odabirem igrače
                                 isSidebarVisible = true
                             },
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -241,14 +221,14 @@ fun LineupBuilder(
                             if (selectedPlayer != null) {
                                 Image(
                                     painter = painterResource(
-                                        id = playerImage ?: (if (position == "GK") teamGoalkeeperJersey else teamJersey)
+                                        id = playerImage ?: (if (basePosition == "GK") teamGoalkeeperJersey else teamJersey)
                                     ),
                                     contentDescription = selectedPlayer
                                 )
                             } else {
                                 Image(
                                     painter = painterResource(
-                                        id = if (position == "GK") teamGoalkeeperJersey else teamJersey
+                                        id = if (basePosition == "GK") teamGoalkeeperJersey else teamJersey
                                     ),
                                     contentDescription = position
                                 )
@@ -340,6 +320,9 @@ fun LineupBuilder(
                     animationSpec = tween(durationMillis = 200)
                 )
             ) {
+                val basePosition = clickedPosition?.takeWhile { it.isLetter() } ?: ""
+                val availablePlayers = playersByPosition[basePosition]
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -364,48 +347,40 @@ fun LineupBuilder(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Spacer(modifier = Modifier.height(24.dp))
-                            playersByPosition[clickedPosition]?.forEach { player ->
-                                val isSelectedForPosition = positionToPlayer.value[clickedPosition] == player.name
-                                val playerImage = playerDetails[player.name]
+                            availablePlayers?.forEach { player ->
                                 val rowHeight = 56.dp
 
                                 Row(
                                     modifier = Modifier
                                         .width(200.dp)
                                         .background(
-                                            color = if (isSelectedForPosition) Color.White else Color.Transparent,
+                                            color = if (positionToPlayer.value[clickedPosition] == player.name) Color.White else Color.Transparent,
                                             shape = RectangleShape
                                         )
                                         .clickable {
-                                            val previouslySelectedPlayer = positionToPlayer.value[clickedPosition]
-                                            if (player.name == previouslySelectedPlayer) {
-                                                takenPlayers.value = takenPlayers.value - player.name
-                                                positionToPlayer.value.remove(clickedPosition)
-                                            } else {
-                                                previouslySelectedPlayer?.let {
-                                                    takenPlayers.value = takenPlayers.value - it
-                                                }
-                                                takenPlayers.value = takenPlayers.value + player.name
-                                                positionToPlayer.value[clickedPosition!!] = player.name
+                                            val previousPlayer = positionToPlayer.value[clickedPosition]
+                                            if (previousPlayer != null) {
+                                                takenPlayers.value = takenPlayers.value - previousPlayer
                                             }
+                                            takenPlayers.value = takenPlayers.value + player.name
+                                            positionToPlayer.value[clickedPosition!!] = player.name
                                             isSidebarVisible = false
                                         }
                                         .padding(12.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
-                                    playerImage?.let {
-                                        Image(
-                                            painter = painterResource(id = it),
-                                            contentDescription = player.name,
-                                            modifier = Modifier.size(rowHeight * 0.6f)
-                                        )
-                                    }
+                                    Image(
+                                        painter = painterResource(id = player.image),
+                                        contentDescription = player.name,
+                                        modifier = Modifier.size(rowHeight * 0.6f)
+                                    )
+
                                     Text(
                                         text = player.name,
                                         fontSize = (rowHeight.value * 0.3).sp,
                                         fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                                        color = if (isSelectedForPosition) Color.Black else Color.White
+                                        color = if (positionToPlayer.value[clickedPosition] == player.name) Color.Black else Color.White
                                     )
                                 }
                             }
@@ -422,12 +397,12 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
         "4-3-3" -> mapOf(
             "GK" to Pair(0.41f, 0.82f),
             "LB" to Pair(0.11f, 0.62f),
-            "LCB" to Pair(0.26f, 0.72f),
-            "RCB" to Pair(0.56f, 0.72f),
+            "CB1" to Pair(0.26f, 0.72f),
+            "CB2" to Pair(0.56f, 0.72f),
             "RB" to Pair(0.71f, 0.62f),
-            "LCM" to Pair(0.21f, 0.42f),
+            "CM1" to Pair(0.21f, 0.42f),
             "CDM" to Pair(0.41f, 0.52f),
-            "RCM" to Pair(0.61f, 0.42f),
+            "CM2" to Pair(0.61f, 0.42f),
             "LW" to Pair(0.16f, 0.17f),
             "ST" to Pair(0.41f, 0.12f),
             "RW" to Pair(0.66f, 0.17f)
