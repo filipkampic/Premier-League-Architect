@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -49,10 +51,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
@@ -82,6 +86,7 @@ fun LineupBuilder(
     var clickedPosition by remember { mutableStateOf<String?>(null) }
     var isSidebarVisible by remember { mutableStateOf(false) }
 
+    val focusManager = LocalFocusManager.current
     var lineupName by remember { mutableStateOf("LINEUP NAME") }
     var isNameFocused by remember { mutableStateOf(false) }
 
@@ -153,14 +158,28 @@ fun LineupBuilder(
                     textAlign = TextAlign.Center
                 ),
                 singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        isNameFocused = false
+                        focusManager.clearFocus()
+                    }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .onFocusChanged { focusState ->
                         if (focusState.isFocused) {
-                            if (!isNameFocused) {
+                            if (lineupName == "LINEUP NAME") {
                                 lineupName = ""
                                 isNameFocused = true
+                            } else {
+                                isNameFocused = true
                             }
+                        } else {
+                            if (lineupName.isEmpty()) {
+                                lineupName = "LINEUP NAME"
+                            }
+                            isNameFocused = false
                         }
                     },
                 colors = TextFieldDefaults.textFieldColors(
