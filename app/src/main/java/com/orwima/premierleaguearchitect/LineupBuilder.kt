@@ -207,8 +207,11 @@ fun LineupBuilder(
                                 y = coordinates.second
                             )
                             .width(iconSize * 1.5f)
-                            .clickable {
-                                clickedPosition = position // TO-DO nešto ne valja kad odabirem igrače
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                clickedPosition = position
                                 isSidebarVisible = true
                             },
                         horizontalAlignment = Alignment.CenterHorizontally
