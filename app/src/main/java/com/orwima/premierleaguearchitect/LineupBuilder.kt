@@ -258,7 +258,13 @@ fun LineupBuilder(
                 DropdownMenuComponent(
                     selectedFormation = selectedFormation,
                     availableFormations = availableFormations,
-                    onFormationSelected = { selectedFormation = it }
+                    onFormationSelected = { newFormation ->
+                        selectedFormation = newFormation
+                    },
+                    onFormationChange = {
+                        positionToPlayer.value.clear()
+                        playerToPosition.value.clear()
+                    }
                 )
 
                 Column(
@@ -425,11 +431,11 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
         "4-2-3-1" -> mapOf(
             "GK" to Pair(0.41f, 0.82f),
             "LB" to Pair(0.11f, 0.62f),
-            "LCB" to Pair(0.26f, 0.72f),
-            "RCB" to Pair(0.56f, 0.72f),
+            "CB1" to Pair(0.26f, 0.72f),
+            "CB2" to Pair(0.56f, 0.72f),
             "RB" to Pair(0.71f, 0.62f),
-            "LDM" to Pair(0.26f, 0.52f),
-            "RDM" to Pair(0.56f, 0.52f),
+            "CDM1" to Pair(0.26f, 0.52f),
+            "CDM2" to Pair(0.56f, 0.52f),
             "LM" to Pair(0.16f, 0.32f),
             "CAM" to Pair(0.41f, 0.32f),
             "RM" to Pair(0.66f, 0.32f),
@@ -438,51 +444,51 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
         "4-4-2" -> mapOf(
             "GK" to Pair(0.41f, 0.82f),
             "LB" to Pair(0.11f, 0.62f),
-            "LCB" to Pair(0.26f, 0.72f),
-            "RCB" to Pair(0.56f, 0.72f),
+            "CB1" to Pair(0.26f, 0.72f),
+            "CB2" to Pair(0.56f, 0.72f),
             "RB" to Pair(0.71f, 0.62f),
             "LM" to Pair(0.16f, 0.42f),
-            "LCM" to Pair(0.31f, 0.47f),
-            "RCM" to Pair(0.51f, 0.47f),
+            "CM1" to Pair(0.31f, 0.47f),
+            "CM2" to Pair(0.51f, 0.47f),
             "RM" to Pair(0.66f, 0.42f),
-            "LST" to Pair(0.31f, 0.22f),
-            "RST" to Pair(0.51f, 0.22f)
+            "ST1" to Pair(0.31f, 0.22f),
+            "ST2" to Pair(0.51f, 0.22f)
         )
         "3-4-2-1" -> mapOf(
             "GK" to Pair(0.41f, 0.82f),
-            "LCB" to Pair(0.21f, 0.69f),
-            "CB" to Pair(0.41f, 0.69f),
-            "RCB" to Pair(0.61f, 0.69f),
-            "LM" to Pair(0.16f, 0.47f),
-            "LDM" to Pair(0.31f, 0.52f),
-            "RDM" to Pair(0.51f, 0.52f),
-            "RM" to Pair(0.66f, 0.47f),
-            "LAM" to Pair(0.26f, 0.27f),
-            "RAM" to Pair(0.56f, 0.27f),
+            "CB1" to Pair(0.21f, 0.64f),
+            "CB2" to Pair(0.41f, 0.64f),
+            "CB3" to Pair(0.61f, 0.64f),
+            "LM" to Pair(0.16f, 0.45f),
+            "CDM1" to Pair(0.31f, 0.50f),
+            "CDM2" to Pair(0.51f, 0.50f),
+            "RM" to Pair(0.66f, 0.45f),
+            "CAM1" to Pair(0.26f, 0.27f),
+            "CAM2" to Pair(0.56f, 0.27f),
             "ST" to Pair(0.41f, 0.12f)
         )
         "3-5-2" -> mapOf(
             "GK" to Pair(0.41f, 0.82f),
-            "LCB" to Pair(0.21f, 0.69f),
-            "CB" to Pair(0.41f, 0.69f),
-            "RCB" to Pair(0.61f, 0.69f),
-            "LM" to Pair(0.15f, 0.42f),
-            "LDM" to Pair(0.30f, 0.47f),
-            "CDM" to Pair(0.41f, 0.52f),
-            "RDM" to Pair(0.52f, 0.47f),
-            "RM" to Pair(0.67f, 0.42f),
-            "LST" to Pair(0.31f, 0.22f),
-            "RST" to Pair(0.51f, 0.22f)
+            "CB1" to Pair(0.21f, 0.64f),
+            "CB2" to Pair(0.41f, 0.64f),
+            "CB3" to Pair(0.61f, 0.64f),
+            "LM" to Pair(0.15f, 0.40f),
+            "CM1" to Pair(0.27f, 0.45f),
+            "CDM" to Pair(0.41f, 0.50f),
+            "CM2" to Pair(0.55f, 0.45f),
+            "RM" to Pair(0.67f, 0.40f),
+            "ST1" to Pair(0.31f, 0.22f),
+            "ST2" to Pair(0.51f, 0.22f)
         )
         "4-4-1-1" -> mapOf(
             "GK" to Pair(0.41f, 0.82f),
             "LB" to Pair(0.11f, 0.62f),
-            "LCB" to Pair(0.26f, 0.72f),
-            "RCB" to Pair(0.56f, 0.72f),
+            "CB1" to Pair(0.26f, 0.72f),
+            "CB2" to Pair(0.56f, 0.72f),
             "RB" to Pair(0.71f, 0.62f),
             "LM" to Pair(0.16f, 0.42f),
-            "LCM" to Pair(0.31f, 0.47f),
-            "RCM" to Pair(0.51f, 0.47f),
+            "CM1" to Pair(0.31f, 0.47f),
+            "CM2" to Pair(0.51f, 0.47f),
             "RM" to Pair(0.66f, 0.42f),
             "CAM" to Pair(0.41f, 0.27f),
             "ST" to Pair(0.41f, 0.12f)
@@ -495,7 +501,8 @@ fun getFormationPositions(formation: String): Map<String, Pair<Float, Float>> {
 fun DropdownMenuComponent(
     selectedFormation: String,
     availableFormations: List<String>,
-    onFormationSelected: (String) -> Unit
+    onFormationSelected: (String) -> Unit,
+    onFormationChange: () -> Unit
 ) {
     val screenWidth = LocalDensity.current.run { LocalConfiguration.current.screenWidthDp.dp }
     val dropdownWidth = screenWidth * 0.4f
@@ -537,6 +544,7 @@ fun DropdownMenuComponent(
                     },
                     onClick = {
                         expanded = false
+                        onFormationChange()
                         onFormationSelected(formation)
                     }
                 )
