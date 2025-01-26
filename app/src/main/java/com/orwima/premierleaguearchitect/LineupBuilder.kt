@@ -103,9 +103,8 @@ fun LineupBuilder(
             valueTransform = { (_, player) -> player }
         )
 
-    val takenPlayers = remember { mutableStateOf(setOf<String>())}
     val positionToPlayer = remember { mutableStateOf(mutableMapOf<String, String>()) }
-
+    val playerToPosition = remember { mutableStateOf(mutableMapOf<String, String>()) }
 
     Box(
         modifier = Modifier.fillMaxSize().background(Color(0XFF252431))
@@ -349,21 +348,37 @@ fun LineupBuilder(
                             Spacer(modifier = Modifier.height(24.dp))
                             availablePlayers?.forEach { player ->
                                 val rowHeight = 56.dp
+                                val isPlayerTaken = playerToPosition.value[player.name] != null
+                                val isPlayerSelectedForCurrentPosition = positionToPlayer.value[clickedPosition] == player.name
 
                                 Row(
                                     modifier = Modifier
                                         .width(200.dp)
                                         .background(
-                                            color = if (positionToPlayer.value[clickedPosition] == player.name) Color.White else Color.Transparent,
+                                            color = if (isPlayerSelectedForCurrentPosition) Color.White
+                                                    else if (isPlayerTaken) Color.Gray
+                                                    else Color.Transparent,
                                             shape = RectangleShape
                                         )
                                         .clickable {
-                                            val previousPlayer = positionToPlayer.value[clickedPosition]
-                                            if (previousPlayer != null) {
-                                                takenPlayers.value = takenPlayers.value - previousPlayer
+                                            val previousPosition = playerToPosition.value[player.name]
+                                            val currentPlayer = positionToPlayer.value[clickedPosition]
+
+                                            if (isPlayerSelectedForCurrentPosition) {
+                                                positionToPlayer.value.remove(clickedPosition)
+                                                playerToPosition.value.remove(player.name)
+                                            } else {
+                                                if (previousPosition != null) {
+                                                    positionToPlayer.value.remove(previousPosition)
+                                                    playerToPosition.value.remove(player.name)
+                                                }
+                                                positionToPlayer.value[clickedPosition!!] = player.name
+                                                playerToPosition.value[player.name] = clickedPosition!!
+
+                                                if (currentPlayer != null) {
+                                                    playerToPosition.value.remove(currentPlayer)
+                                                }
                                             }
-                                            takenPlayers.value = takenPlayers.value + player.name
-                                            positionToPlayer.value[clickedPosition!!] = player.name
                                             isSidebarVisible = false
                                         }
                                         .padding(12.dp),
