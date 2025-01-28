@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +51,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -63,7 +65,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.orwima.premierleaguearchitect.PlayerRepository.allPlayers
 
 @Composable
 @Preview(showBackground = true)
@@ -98,18 +99,28 @@ fun LineupBuilder(
     var containerHeight by remember { mutableStateOf(0) }
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    val playersByPosition = allPlayers
-        .filter { it.team == teamName }
-        .flatMap { player ->
-            player.positions.map { position -> position to player }
-        }
-        .groupBy(
-            keySelector = { (position, _) -> position },
-            valueTransform = { (_, player) -> player }
-        )
-
     val positionToPlayer = remember { mutableStateOf(mutableMapOf<String, String>()) }
     val playerToPosition = remember { mutableStateOf(mutableMapOf<String, String>()) }
+
+    val firestoreRepository = FirestoreRepository()
+    val playersByPosition = remember { mutableStateOf<Map<String, List<Player>>>(emptyMap()) }
+    val error = remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(teamName) {
+        firestoreRepository.fetchPlayers(
+            teamName = teamName,
+            onSuccess = { fetchedPlayers ->
+                val groupedPlayers = fetchedPlayers.flatMap { player ->
+                    player.positions.map { position -> position to player }
+                }.groupBy(
+                    keySelector = { (position, _) -> position },
+                    valueTransform = { (_, player) -> player }
+                )
+                playersByPosition.value = groupedPlayers
+            },
+            onError = { e -> error.value = e.message }
+        )
+    }
 
     Box(
         modifier = Modifier.fillMaxSize().background(Color(0XFF252431))
@@ -213,11 +224,15 @@ fun LineupBuilder(
             ) {
                 responsivePositions.forEach { (position, coordinates) ->
                     val basePosition = position.takeWhile { it.isLetter() }
-                    val availablePlayers = playersByPosition[basePosition]
-
-                    val selectedPlayer = positionToPlayer.value[position]
+                    val selectedPlayerName = positionToPlayer.value[position]
+                    val availablePlayers = playersByPosition.value[basePosition]
+                    val selectedPlayer = availablePlayers?.find { it.name == selectedPlayerName }
                     val iconSize = with(density) { (containerWidth * 0.125f).toDp() }
-                    val playerImage = availablePlayers?.find { it.name == selectedPlayer }?.image
+
+                    val context = LocalContext.current
+                    val imageResource = selectedPlayer?.image?.let {
+                        context.resources.getIdentifier(it, "drawable", context.packageName)
+                    }
 
                     Column(
                         modifier = Modifier
@@ -239,12 +254,10 @@ fun LineupBuilder(
                             modifier = Modifier.size(iconSize),
                             contentAlignment = Alignment.Center
                         ) {
-                            if (selectedPlayer != null) {
+                            if (imageResource != null && imageResource != 0) {
                                 Image(
-                                    painter = painterResource(
-                                        id = playerImage ?: (if (basePosition == "GK") teamGoalkeeperJersey else teamJersey)
-                                    ),
-                                    contentDescription = selectedPlayer
+                                    painter = painterResource(id = imageResource),
+                                    contentDescription = selectedPlayer.name
                                 )
                             } else {
                                 Image(
@@ -258,7 +271,7 @@ fun LineupBuilder(
 
                         selectedPlayer?.let {
                             Text(
-                                text = it,
+                                text = it.name,
                                 fontSize = (iconSize.value * 0.2).sp,
                                 fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                                 color = Color.White,
@@ -294,11 +307,23 @@ fun LineupBuilder(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
-                        onClick = onSave,
+                        onClick = {
+                            val lineup = Lineup(
+                                team = teamName,
+                                formation = selectedFormation,
+                                positions = positionToPlayer.value
+                            )
+                            firestoreRepository.saveLineup(
+                                lineupName = lineupName,
+                                lineup = lineup,
+                                onSuccess = { println("Lineup saved sucessfully!") },
+                                onError = { e -> println("Error saving lineup: ${e.message}") }
+                            )
+                            onSave()
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF40C5C)),
-                        modifier = Modifier
-                            .width(screenWidth * 0.3f)
+                        modifier = Modifier.width(screenWidth * 0.3f)
                     ) {
                         Text(
                             text = "SAVE",
@@ -348,7 +373,7 @@ fun LineupBuilder(
                 )
             ) {
                 val basePosition = clickedPosition?.takeWhile { it.isLetter() } ?: ""
-                val availablePlayers = playersByPosition[basePosition]
+                val availablePlayers = playersByPosition.value[basePosition]
 
                 Box(
                     modifier = Modifier
@@ -379,6 +404,9 @@ fun LineupBuilder(
                                 val isPlayerTaken = playerToPosition.value[player.name] != null
                                 val isPlayerSelectedForCurrentPosition = positionToPlayer.value[clickedPosition] == player.name
 
+                                val context = LocalContext.current
+                                val imageResource = context.resources.getIdentifier(player.image, "drawable", context.packageName)
+
                                 Row(
                                     modifier = Modifier
                                         .width(200.dp)
@@ -408,17 +436,25 @@ fun LineupBuilder(
                                                 }
                                             }
                                             isSidebarVisible = false
+
                                         }
                                         .padding(12.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
-                                    Image(
-                                        painter = painterResource(id = player.image),
-                                        contentDescription = player.name,
-                                        modifier = Modifier.size(rowHeight * 0.6f)
-                                    )
-
+                                    if (imageResource != 0) {
+                                        Image(
+                                            painter = painterResource(id = imageResource),
+                                            contentDescription = player.name,
+                                            modifier = Modifier.size(rowHeight * 0.6f)
+                                        )
+                                    } else {
+                                        Image(
+                                            painter = painterResource(id = teamJersey),
+                                            contentDescription = "Player",
+                                            modifier = Modifier.size(rowHeight * 0.6f)
+                                        )
+                                    }
                                     Text(
                                         text = player.name,
                                         fontSize = (rowHeight.value * 0.3).sp,

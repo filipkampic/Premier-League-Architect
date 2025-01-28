@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "494902385946",
+    "project_id": "premier-league-architect",
+    "storage_bucket": "premier-league-architect.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494902385946:android:18c71225ff1071b5f360a3",
+        "android_client_info": {
+          "package_name": "com.orwima.premierleaguearchitect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmInpKBjvOrCcUr-UEzDFZPTSrYhKB7Ek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

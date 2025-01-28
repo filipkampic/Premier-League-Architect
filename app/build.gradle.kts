@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -61,4 +62,8 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.3")
     implementation("androidx.core:core-splashscreen:1.0.0-beta02")
     implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("com.google.firebase:firebase-firestore:24.9.1")
+    implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }

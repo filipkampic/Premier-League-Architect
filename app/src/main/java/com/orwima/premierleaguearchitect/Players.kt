@@ -1,12 +1,18 @@
 package com.orwima.premierleaguearchitect
 
 data class Player(
-    val name: String,
-    val image: Int,
-    val team: String,
-    val positions: List<String>
+    val name: String = "",
+    val image: String = "",
+    val team: String = "",
+    val positions: List<String> = emptyList()
 )
 
+data class Lineup(
+    val team: String = "",
+    val formation: String = "",
+    val positions: Map<String, String> = emptyMap()
+)
+/*
 object PlayerRepository {
     val allPlayers = listOf(
         Player(name = "K. Havertz", image = R.drawable.havertz, team = "Arsenal", positions = listOf("ST", "CAM")),
@@ -217,4 +223,4 @@ object PlayerRepository {
         Player(name = "M. Dubravka", image = R.drawable.dubravka, team = "Newcastle", positions = listOf("GK")),
         Player(name = "J. Ruddy", image = R.drawable.ruddy, team = "Newcastle", positions = listOf("GK")),
     )
-}
+}*/
