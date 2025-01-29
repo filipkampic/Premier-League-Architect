@@ -119,8 +119,7 @@ fun SavedLineupsMenu(
         }
 
         Column(
-            modifier = Modifier.fillMaxSize(),
-
+            modifier = Modifier.fillMaxSize()
         ) {
             Text(
                 text = "SAVED LINEUPS",
