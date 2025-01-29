@@ -308,6 +308,10 @@ fun LineupBuilder(
                 ) {
                     Button(
                         onClick = {
+                            if (lineupName.isEmpty() || lineupName == "LINEUP NAME") {
+                                println("Error: Lineup name is empty or default.")
+                                return@Button
+                            }
                             val lineup = Lineup(
                                 team = teamName,
                                 formation = selectedFormation,

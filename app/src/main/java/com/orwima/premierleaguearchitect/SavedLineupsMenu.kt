@@ -21,6 +21,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,25 +44,34 @@ import kotlin.math.exp
 @Composable
 @Preview(showBackground = true)
 fun SavedLineupsMenuPreview() {
-    SavedLineupsMenu(navController = rememberNavController())
+    SavedLineupsMenu(navController = rememberNavController(), firestoreRepository = FirestoreRepository())
 }
 
 @Composable
 fun SavedLineupsMenu(
-    navController: NavController
+    navController: NavController,
+    firestoreRepository: FirestoreRepository = FirestoreRepository()
 ) {
-    val initialLineups = listOf(
-        Pair("Best Arsenal 11", R.drawable.arsenal),
-        Pair("No Palmer", R.drawable.chelsea),
-        Pair("Lineup vs Spurs", R.drawable.arsenal),
-        Pair("Amorim style", R.drawable.man_united)
-    )
-
-    val lineups = remember { mutableStateOf(initialLineups) }
+    val lineups = remember { mutableStateOf<List<Pair<String, Lineup>>>(emptyList()) }
+    val isLoading = remember { mutableStateOf(true) }
+    val error = remember { mutableStateOf<String?>(null) }
 
     val sortOptions = listOf("Created (Newest)", "Created (Oldest)", "Name (A-Z)", "Name (Z-A)", "Club (A-Z)", "Club (Z-A)")
     val selectedSortOption = remember { mutableStateOf(sortOptions[0]) }
     val isDropdownExpanded = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        firestoreRepository.fetchAllLineups(
+            onSuccess = {
+                lineups.value = it
+                isLoading.value = false
+            },
+            onError = { e ->
+                error.value = e.message
+                isLoading.value = false
+            }
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -91,8 +101,26 @@ fun SavedLineupsMenu(
                 }
         )
 
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isLoading.value) {
+                Text(
+                    text = "Loading...",
+                    color = Color.White
+                )
+            } else if (error.value != null) {
+                Text(
+                    text = "Error: ${error.value}",
+                    color = Color.Red
+                )
+            }
+        }
+
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+
         ) {
             Text(
                 text = "SAVED LINEUPS",
@@ -127,7 +155,10 @@ fun SavedLineupsMenu(
                 Box(
                     modifier = Modifier
                         .size(140.dp, 26.dp)
-                        .background(Color.White, shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+                        .background(
+                            Color.White,
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                        )
                         .clickable { isDropdownExpanded.value = true },
                     contentAlignment = Alignment.CenterEnd
                 ) {
@@ -150,24 +181,32 @@ fun SavedLineupsMenu(
                                     selectedSortOption.value = option
                                     isDropdownExpanded.value = false
 
-                                    when(option) {
+                                    when (option) {
                                         "Created (Newest)" -> {
                                             // TO-DO: Implement sorting by created (newest)
                                         }
+
                                         "Created (Oldest)" -> {
                                             // TO-DO: Implement sorting by created (oldest)
                                         }
+
                                         "Name (A-Z)" -> {
                                             lineups.value = lineups.value.sortedBy { it.first }
                                         }
+
                                         "Name (Z-A)" -> {
-                                            lineups.value = lineups.value.sortedByDescending { it.first }
+                                            lineups.value =
+                                                lineups.value.sortedByDescending { it.first }
                                         }
+
                                         "Club (A-Z)" -> {
-                                            lineups.value = lineups.value.sortedBy { it.second }
+                                            lineups.value =
+                                                lineups.value.sortedBy { it.second.team }
                                         }
+
                                         "Club (Z-A)" -> {
-                                            lineups.value = lineups.value.sortedByDescending { it.second }
+                                            lineups.value =
+                                                lineups.value.sortedByDescending { it.second.team }
                                         }
                                     }
                                 },
@@ -205,10 +244,33 @@ fun SavedLineupsMenu(
                             }
                     ) {
                         Image(
-                            painter = painterResource(id = lineup.second),
+                            painter = painterResource(
+                                id = when (lineup.second.team) {
+                                    "Arsenal" -> R.drawable.arsenal
+                                    "Aston Villa" -> R.drawable.aston_villa
+                                    "Bournemouth" -> R.drawable.bournemouth
+                                    "Brentford" -> R.drawable.brentford
+                                    "Brighton" -> R.drawable.brighton
+                                    "Chelsea" -> R.drawable.chelsea
+                                    "Crystal Palace" -> R.drawable.crystal_palace
+                                    "Everton" -> R.drawable.everton
+                                    "Fulham" -> R.drawable.fulham
+                                    "Ipswich Town" -> R.drawable.ipswich_town
+                                    "Leicester City" -> R.drawable.leicester_city
+                                    "Liverpool" -> R.drawable.liverpool
+                                    "Man City" -> R.drawable.man_city
+                                    "Man United" -> R.drawable.man_united
+                                    "Newcastle United" -> R.drawable.newcastle_united
+                                    "Nottingham Forest" -> R.drawable.nottingham_forest
+                                    "Southampton" -> R.drawable.southampton
+                                    "Tottenham Hotspur" -> R.drawable.tottenham
+                                    "West Ham United" -> R.drawable.west_ham
+                                    "Wolverhampton Wanderers" -> R.drawable.wolves
+                                    else -> R.drawable.app_logo
+                                }
+                            ),
                             contentDescription = lineup.first,
-                            modifier = Modifier
-                                .size(56.dp)
+                            modifier = Modifier.size(56.dp)
                         )
 
                         Text(

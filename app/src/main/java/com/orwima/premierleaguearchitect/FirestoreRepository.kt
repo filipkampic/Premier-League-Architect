@@ -46,25 +46,38 @@ class FirestoreRepository {
             .addOnFailureListener { e -> onError(e) }
     }
 
-    fun fetchLineup(
-        lineupName: String,
-        onSuccess: (Lineup?) -> Unit,
+    fun fetchAllLineups(
+        onSuccess: (List<Pair<String, Lineup>>) -> Unit,
         onError: (Exception) -> Unit
     ) {
         db.collection("lineups")
-            .document(lineupName)
             .get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val lineup = Lineup(
-                        team = document.getString("team") ?: "",
-                        formation = document.getString("formation") ?: "",
-                        positions = document.get("positions") as? Map<String, String> ?: emptyMap()
-                    )
-                    onSuccess(lineup)
-                } else {
-                    onSuccess(null)
+            .addOnSuccessListener { result ->
+                val lineups = result.documents.mapNotNull { document ->
+                    val lineupName = document.id
+                    val lineupData = document.toObject(Lineup::class.java)
+                    if (lineupData != null) lineupName to lineupData else null
                 }
+                onSuccess(lineups)
+            }
+            .addOnFailureListener { e -> onError(e) }
+    }
+
+    fun fetchTeamLineups(
+        teamName: String,
+        onSuccess: (List<Pair<String, Lineup>>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        db.collection("lineups")
+            .whereEqualTo("team", teamName)
+            .get()
+            .addOnSuccessListener { result ->
+                val lineups = result.documents.mapNotNull { document ->
+                    val lineupName = document.id
+                    val lineupData = document.toObject(Lineup::class.java)
+                    if (lineupData != null) lineupName to lineupData else null
+                }
+                onSuccess(lineups)
             }
             .addOnFailureListener { e -> onError(e) }
     }
