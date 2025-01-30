@@ -16,12 +16,12 @@ fun getTeamLogo(teamName: String): Int {
         "Liverpool" -> R.drawable.liverpool
         "Man City" -> R.drawable.man_city
         "Man United" -> R.drawable.man_united
-        "Newcastle United" -> R.drawable.newcastle_united
+        "Newcastle" -> R.drawable.newcastle_united
         "Nottingham Forest" -> R.drawable.nottingham_forest
         "Southampton" -> R.drawable.southampton
-        "Tottenham Hotspur" -> R.drawable.tottenham
-        "West Ham United" -> R.drawable.west_ham
-        "Wolverhampton Wanderers" -> R.drawable.wolves
+        "Tottenham" -> R.drawable.tottenham
+        "West Ham" -> R.drawable.west_ham
+        "Wolves" -> R.drawable.wolves
         else -> R.drawable.app_logo
     }
 }

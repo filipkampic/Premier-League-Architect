@@ -201,7 +201,6 @@ object PlayerRepository {
         Player(name = "W. Osula", image = R.drawable.osula, team = "Newcastle", positions = listOf("ST")),
         Player(name = "A. Gordon", image = R.drawable.gordon, team = "Newcastle", positions = listOf("LW", "RW")),
         Player(name = "H. Barnes", image = R.drawable.barnes, team = "Newcastle", positions = listOf("LW", "RW")),
-        Player(name = "M. Almiron", image = R.drawable.almiron, team = "Newcastle", positions = listOf("RW", "CAM")),
         Player(name = "J. Murphy", image = R.drawable.murphy, team = "Newcastle", positions = listOf("RW")),
         Player(name = "Joelinton", image = R.drawable.joelinton, team = "Newcastle", positions = listOf("CM", "LW")),
         Player(name = "S. Tonali", image = R.drawable.tonali, team = "Newcastle", positions = listOf("CM", "CDM")),

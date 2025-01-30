@@ -81,7 +81,7 @@ import androidx.navigation.NavController
         teamLogo: Int,
         teamJersey: Int,
         teamGoalkeeperJersey: Int,
-        lineupName: String?,
+        lineupName: String,
         onSave: () -> Unit,
         onLeave: () -> Unit
     ) {
@@ -376,24 +376,24 @@ import androidx.navigation.NavController
                                 color = Color.Black
                             )
                         }
-                        Button(
-                            onClick = {
-                                if (lineupName != null) {
+                        if (lineupName != "NEW") {
+                            Button(
+                                onClick = {
                                     firestoreRepository.deleteLineup(
                                         lineupName = lineupName,
                                         onSuccess = { navController.navigate("team_lineups/$teamName") },
                                         onError = { e -> println("Error: ${e.message}") }
                                     )
-                                }
-                            },
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                            modifier = Modifier.width(screenWidth * 0.3f)
-                        ) {
-                            Text(
-                                text = "DELETE",
-                                color = Color.White
-                            )
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                                modifier = Modifier.width(screenWidth * 0.3f)
+                            ) {
+                                Text(
+                                    text = "DELETE",
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
