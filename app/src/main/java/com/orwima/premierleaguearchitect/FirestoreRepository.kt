@@ -43,15 +43,13 @@ class FirestoreRepository {
         val lineupRef = db.collection("lineups")
 
         if (oldLineupName != null && oldLineupName == newLineupName) {
-            lineupRef
-                .document(newLineupName)
+            lineupRef.document(newLineupName)
                 .set(lineup)
                 .addOnSuccessListener { onSuccess() }
                 .addOnFailureListener { e -> onError(e) }
         } else {
             if (!oldLineupName.isNullOrEmpty()) {
-                lineupRef
-                    .document(oldLineupName)
+                lineupRef.document(oldLineupName)
                     .delete()
                     .addOnSuccessListener {
                         lineupRef
@@ -62,8 +60,7 @@ class FirestoreRepository {
                     }
                     .addOnFailureListener { e -> onError(e) }
             } else {
-                lineupRef
-                    .document(newLineupName)
+                lineupRef.document(newLineupName)
                     .set(lineup)
                     .addOnSuccessListener { onSuccess() }
                     .addOnFailureListener { e -> onError(e) }
@@ -123,6 +120,17 @@ class FirestoreRepository {
                     onSuccess(null)
                 }
             }
+            .addOnFailureListener { e -> onError(e) }
+    }
+
+    fun deleteLineup(
+        lineupName: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        db.collection("lineups").document(lineupName)
+            .delete()
+            .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { e -> onError(e) }
     }
 }

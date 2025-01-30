@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 
 @Composable
     @Preview(showBackground = true)
@@ -368,14 +367,32 @@ import androidx.navigation.compose.rememberNavController
                         Button(
                             onClick = onLeave,
                             shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults
-                                .buttonColors(containerColor = Color.White),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                             modifier = Modifier
                                 .width(screenWidth * 0.3f)
                         ) {
                             Text(
                                 text = "LEAVE",
                                 color = Color.Black
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                if (lineupName != null) {
+                                    firestoreRepository.deleteLineup(
+                                        lineupName = lineupName,
+                                        onSuccess = { navController.navigate("team_lineups/$teamName") },
+                                        onError = { e -> println("Error: ${e.message}") }
+                                    )
+                                }
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                            modifier = Modifier.width(screenWidth * 0.3f)
+                        ) {
+                            Text(
+                                text = "DELETE",
+                                color = Color.White
                             )
                         }
                     }
