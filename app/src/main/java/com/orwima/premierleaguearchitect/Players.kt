@@ -10,7 +10,8 @@ data class Player(
 data class Lineup(
     val team: String = "",
     val formation: String = "",
-    val positions: Map<String, String> = emptyMap()
+    val positions: Map<String, String> = emptyMap(),
+    val timestamp: Long = System.currentTimeMillis()
 )
 /*
 object PlayerRepository {

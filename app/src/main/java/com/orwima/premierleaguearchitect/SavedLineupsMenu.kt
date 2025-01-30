@@ -59,8 +59,8 @@ fun SavedLineupsMenu(
 
     LaunchedEffect(Unit) {
         firestoreRepository.fetchAllLineups(
-            onSuccess = {
-                lineups.value = it
+            onSuccess = { fetchedLineups ->
+                lineups.value = fetchedLineups.sortedBy { it.second.timestamp }
                 isLoading.value = false
             },
             onError = { e ->
@@ -179,11 +179,11 @@ fun SavedLineupsMenu(
 
                                     when (option) {
                                         "Created (Newest)" -> {
-                                            // TO-DO: Implement sorting by created (newest)
+                                            lineups.value = lineups.value.sortedBy { it.second.timestamp }
                                         }
 
                                         "Created (Oldest)" -> {
-                                            // TO-DO: Implement sorting by created (oldest)
+                                            lineups.value = lineups.value.sortedByDescending { it.second.timestamp }
                                         }
 
                                         "Name (A-Z)" -> {

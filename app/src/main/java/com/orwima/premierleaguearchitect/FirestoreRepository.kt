@@ -1,6 +1,7 @@
 package com.orwima.premierleaguearchitect
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class FirestoreRepository {
     private val db = FirebaseFirestore.getInstance()
@@ -41,10 +42,11 @@ class FirestoreRepository {
         onError: (Exception) -> Unit
     ) {
         val lineupRef = db.collection("lineups")
+        val lineupWithTimeStamp = lineup.copy(timestamp = System.currentTimeMillis())
 
         if (oldLineupName != null && oldLineupName == newLineupName) {
             lineupRef.document(newLineupName)
-                .set(lineup)
+                .set(lineupWithTimeStamp)
                 .addOnSuccessListener { onSuccess() }
                 .addOnFailureListener { e -> onError(e) }
         } else {
@@ -54,14 +56,14 @@ class FirestoreRepository {
                     .addOnSuccessListener {
                         lineupRef
                             .document(newLineupName)
-                            .set(lineup)
+                            .set(lineupWithTimeStamp)
                             .addOnSuccessListener { onSuccess() }
                             .addOnFailureListener { e -> onError(e) }
                     }
                     .addOnFailureListener { e -> onError(e) }
             } else {
                 lineupRef.document(newLineupName)
-                    .set(lineup)
+                    .set(lineupWithTimeStamp)
                     .addOnSuccessListener { onSuccess() }
                     .addOnFailureListener { e -> onError(e) }
             }
