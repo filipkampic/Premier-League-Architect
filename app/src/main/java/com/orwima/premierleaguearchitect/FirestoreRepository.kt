@@ -34,16 +34,41 @@ class FirestoreRepository {
     }
 
     fun saveLineup(
-        lineupName: String,
+        oldLineupName: String?,
+        newLineupName: String,
         lineup: Lineup,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        db.collection("lineups")
-            .document(lineupName)
-            .set(lineup)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { e -> onError(e) }
+        val lineupRef = db.collection("lineups")
+
+        if (oldLineupName != null && oldLineupName == newLineupName) {
+            lineupRef
+                .document(newLineupName)
+                .set(lineup)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { e -> onError(e) }
+        } else {
+            if (!oldLineupName.isNullOrEmpty()) {
+                lineupRef
+                    .document(oldLineupName)
+                    .delete()
+                    .addOnSuccessListener {
+                        lineupRef
+                            .document(newLineupName)
+                            .set(lineup)
+                            .addOnSuccessListener { onSuccess() }
+                            .addOnFailureListener { e -> onError(e) }
+                    }
+                    .addOnFailureListener { e -> onError(e) }
+            } else {
+                lineupRef
+                    .document(newLineupName)
+                    .set(lineup)
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { e -> onError(e) }
+            }
+        }
     }
 
     fun fetchAllLineups(
@@ -78,6 +103,25 @@ class FirestoreRepository {
                     if (lineupData != null) lineupName to lineupData else null
                 }
                 onSuccess(lineups)
+            }
+            .addOnFailureListener { e -> onError(e) }
+    }
+
+    fun fetchLineup(
+        lineupName: String,
+        onSuccess: (Lineup?) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        db.collection("lineups")
+            .document(lineupName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val lineup = document.toObject(Lineup::class.java)
+                    onSuccess(lineup)
+                } else {
+                    onSuccess(null)
+                }
             }
             .addOnFailureListener { e -> onError(e) }
     }

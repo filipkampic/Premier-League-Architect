@@ -220,35 +220,16 @@ fun TeamLineups(
                             )
                             .padding(8.dp)
                             .clickable {
-                                navController.navigate("saved_lineup_example") /*TO-DO*/
+                                val teamLogo = getTeamLogo(lineup.second.team)
+                                val teamJersey = getTeamJersey(lineup.second.team)
+                                val teamGoalkeeperJersey = getTeamGoalkeeperJersey(lineup.second.team)
+                                val lineupName = lineup.first
+
+                                navController.navigate("lineup_builder/${lineup.second.team}/$teamLogo/$teamJersey/$teamGoalkeeperJersey/$lineupName")
                             }
                     ) {
                         Image(
-                            painter = painterResource(
-                                id = when (lineup.second.team) {
-                                    "Arsenal" -> R.drawable.arsenal
-                                    "Aston Villa" -> R.drawable.aston_villa
-                                    "Bournemouth" -> R.drawable.bournemouth
-                                    "Brentford" -> R.drawable.brentford
-                                    "Brighton" -> R.drawable.brighton
-                                    "Chelsea" -> R.drawable.chelsea
-                                    "Crystal Palace" -> R.drawable.crystal_palace
-                                    "Everton" -> R.drawable.everton
-                                    "Fulham" -> R.drawable.fulham
-                                    "Ipswich Town" -> R.drawable.ipswich_town
-                                    "Leicester City" -> R.drawable.leicester_city
-                                    "Liverpool" -> R.drawable.liverpool
-                                    "Man City" -> R.drawable.man_city
-                                    "Man United" -> R.drawable.man_united
-                                    "Newcastle United" -> R.drawable.newcastle_united
-                                    "Nottingham Forest" -> R.drawable.nottingham_forest
-                                    "Southampton" -> R.drawable.southampton
-                                    "Tottenham Hotspur" -> R.drawable.tottenham
-                                    "West Ham United" -> R.drawable.west_ham
-                                    "Wolverhampton Wanderers" -> R.drawable.wolves
-                                    else -> R.drawable.app_logo
-                                }
-                            ),
+                            painter = painterResource(id = getTeamLogo(lineup.second.team)),
                             contentDescription = lineup.first,
                             modifier = Modifier
                                 .size(56.dp)
