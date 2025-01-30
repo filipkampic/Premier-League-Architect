@@ -49,7 +49,7 @@ fun AppNavigation() {
                 teamJersey = teamJersey,
                 teamGoalkeeperJersey = teamGoalkeeperJersey,
                 lineupName = lineupName,
-                onSave = { /* TO-DO: Save Lineup */ },
+                onSave = {  },
                 onLeave = { navController.navigate("home") }
             )
         }
