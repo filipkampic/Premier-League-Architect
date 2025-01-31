@@ -75,6 +75,7 @@ class FirestoreRepository {
         onError: (Exception) -> Unit
     ) {
         db.collection("lineups")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 val lineups = result.documents.mapNotNull { document ->

@@ -179,11 +179,11 @@ fun SavedLineupsMenu(
 
                                     when (option) {
                                         "Created (Newest)" -> {
-                                            lineups.value = lineups.value.sortedBy { it.second.timestamp }
+                                            lineups.value = lineups.value.sortedByDescending { it.second.timestamp }
                                         }
 
                                         "Created (Oldest)" -> {
-                                            lineups.value = lineups.value.sortedByDescending { it.second.timestamp }
+                                            lineups.value = lineups.value.sortedBy { it.second.timestamp }
                                         }
 
                                         "Name (A-Z)" -> {
