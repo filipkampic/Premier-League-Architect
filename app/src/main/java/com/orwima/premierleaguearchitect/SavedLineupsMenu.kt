@@ -251,7 +251,7 @@ fun SavedLineupsMenu(
                         )
 
                         Text(
-                            text = lineup.first,
+                            text = lineup.first.uppercase(),
                             fontFamily = FontFamily(Font(R.font.paytoneone_regular)),
                             fontSize = 20.sp,
                             color = Color.White,

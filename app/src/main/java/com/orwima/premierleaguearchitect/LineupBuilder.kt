@@ -189,7 +189,7 @@ import androidx.navigation.NavController
                     modifier = Modifier.size(80.dp)
                 )
                 TextField(
-                    value = lineupDisplayName,
+                    value = lineupDisplayName.uppercase(),
                     onValueChange = { lineupDisplayName = it },
                     textStyle = TextStyle(
                         fontSize = 24.sp,
