@@ -189,7 +189,7 @@ import androidx.navigation.NavController
                     modifier = Modifier.size(80.dp)
                 )
                 TextField(
-                    value = lineupDisplayName.uppercase(),
+                    value = lineupDisplayName,
                     onValueChange = { lineupDisplayName = it },
                     textStyle = TextStyle(
                         fontSize = 24.sp,
@@ -348,7 +348,7 @@ import androidx.navigation.NavController
                                 )
                                 firestoreRepository.saveLineup(
                                     oldLineupName = lineupName,
-                                    newLineupName = lineupDisplayName,
+                                    newLineupName = lineupDisplayName.uppercase(),
                                     lineup = lineup,
                                     onSuccess = { navController.navigate("team_lineups/$teamName") },
                                     onError = { e -> println("Error saving lineup: ${e.message}") }
