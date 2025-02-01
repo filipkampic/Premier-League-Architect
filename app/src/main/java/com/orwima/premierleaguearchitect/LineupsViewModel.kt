@@ -1,22 +1,23 @@
 package com.orwima.premierleaguearchitect
 
+import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.flow.MutableStateFlow
 
-class FirestoreRepository {
+class LineupsViewModel: ViewModel() {
     private val db = FirebaseFirestore.getInstance()
 
-    fun fetchPlayers(
-        teamName: String,
-        onSuccess: (List<Player>) -> Unit,
-        onError: (Exception) -> Unit
-    ) {
+    val lineups = MutableStateFlow<List<Pair<String, Lineup>>>(emptyList())
+    val players = MutableStateFlow<List<Player>>(emptyList())
+    val selectedLineup = MutableStateFlow<Lineup?>(null)
+
+    fun fetchPlayers(teamName: String) {
         db.collection("players")
             .whereEqualTo("teamName", teamName)
             .get()
             .addOnSuccessListener { result ->
-
-                val players = result.documents
+                val fetchedPlayers = result.documents
                     .flatMap { document ->
                         val playersArray = document.get("players") as? List<Map<String, Any>> ?: emptyList()
 
@@ -29,17 +30,14 @@ class FirestoreRepository {
                             )
                         }
                     }
-                onSuccess(players)
+                players.value = fetchedPlayers
             }
-            .addOnFailureListener { e -> onError(e) }
     }
 
     fun saveLineup(
         oldLineupName: String?,
         newLineupName: String,
-        lineup: Lineup,
-        onSuccess: () -> Unit,
-        onError: (Exception) -> Unit
+        lineup: Lineup
     ) {
         val lineupRef = db.collection("lineups")
         val lineupWithTimeStamp = lineup.copy(timestamp = System.currentTimeMillis())
@@ -47,93 +45,76 @@ class FirestoreRepository {
         if (oldLineupName != null && oldLineupName == newLineupName) {
             lineupRef.document(newLineupName)
                 .set(lineupWithTimeStamp)
-                .addOnSuccessListener { onSuccess() }
-                .addOnFailureListener { e -> onError(e) }
+                .addOnSuccessListener {
+                    fetchTeamLineups(lineup.team)
+                }
         } else {
             if (!oldLineupName.isNullOrEmpty()) {
                 lineupRef.document(oldLineupName)
                     .delete()
                     .addOnSuccessListener {
-                        lineupRef
-                            .document(newLineupName)
+                        lineupRef.document(newLineupName)
                             .set(lineupWithTimeStamp)
-                            .addOnSuccessListener { onSuccess() }
-                            .addOnFailureListener { e -> onError(e) }
+                            .addOnSuccessListener {
+                                fetchTeamLineups(lineup.team)
+                            }
                     }
-                    .addOnFailureListener { e -> onError(e) }
             } else {
                 lineupRef.document(newLineupName)
                     .set(lineupWithTimeStamp)
-                    .addOnSuccessListener { onSuccess() }
-                    .addOnFailureListener { e -> onError(e) }
+                    .addOnSuccessListener {
+                        fetchTeamLineups(lineup.team)
+                    }
             }
         }
     }
 
-    fun fetchAllLineups(
-        onSuccess: (List<Pair<String, Lineup>>) -> Unit,
-        onError: (Exception) -> Unit
-    ) {
+    fun fetchAllLineups() {
         db.collection("lineups")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
-                val lineups = result.documents.mapNotNull { document ->
+                val fetchedLineups = result.documents.mapNotNull { document ->
                     val lineupName = document.id
                     val lineupData = document.toObject(Lineup::class.java)
                     if (lineupData != null) lineupName to lineupData else null
                 }
-                onSuccess(lineups)
+                lineups.value = fetchedLineups
             }
-            .addOnFailureListener { e -> onError(e) }
     }
 
-    fun fetchTeamLineups(
-        teamName: String,
-        onSuccess: (List<Pair<String, Lineup>>) -> Unit,
-        onError: (Exception) -> Unit
-    ) {
+    fun fetchTeamLineups(teamName: String) {
         db.collection("lineups")
             .whereEqualTo("team", teamName)
             .get()
             .addOnSuccessListener { result ->
-                val lineups = result.documents.mapNotNull { document ->
+                val fetchedLineups = result.documents.mapNotNull { document ->
                     val lineupName = document.id
                     val lineupData = document.toObject(Lineup::class.java)
                     if (lineupData != null) lineupName to lineupData else null
                 }
-                onSuccess(lineups)
+                lineups.value = fetchedLineups
             }
-            .addOnFailureListener { e -> onError(e) }
     }
 
-    fun fetchLineup(
-        lineupName: String,
-        onSuccess: (Lineup?) -> Unit,
-        onError: (Exception) -> Unit
-    ) {
-        db.collection("lineups")
-            .document(lineupName)
+    fun fetchLineup(lineupName: String) {
+        db.collection("lineups").document(lineupName)
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     val lineup = document.toObject(Lineup::class.java)
-                    onSuccess(lineup)
+                    selectedLineup.value = lineup
                 } else {
-                    onSuccess(null)
+                    selectedLineup.value = null
                 }
             }
-            .addOnFailureListener { e -> onError(e) }
     }
 
-    fun deleteLineup(
-        lineupName: String,
-        onSuccess: () -> Unit,
-        onError: (Exception) -> Unit
-    ) {
+    fun deleteLineup(lineupName: String, teamName: String) {
         db.collection("lineups").document(lineupName)
             .delete()
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { e -> onError(e) }
+            .addOnSuccessListener {
+                fetchTeamLineups(teamName)
+            }
     }
 }

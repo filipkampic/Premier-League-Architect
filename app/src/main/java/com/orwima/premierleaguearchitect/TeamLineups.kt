@@ -21,8 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -32,44 +35,29 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextAlign import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-
-@Composable
-@Preview(showBackground = true)
-fun TeamLineupsPreview() {
-    TeamLineups(navController = rememberNavController(), "Arsenal", firestoreRepository = FirestoreRepository())
-}
 
 @Composable
 fun TeamLineups(
     navController: NavController,
     teamName: String,
-    firestoreRepository: FirestoreRepository = FirestoreRepository()
+    viewModel: LineupsViewModel
 ) {
+    val lineups by viewModel.lineups.collectAsState()
+    var sortedLineups by remember { mutableStateOf(emptyList<Pair<String, Lineup>>()) }
+
     val sortOptions = listOf("Created (Newest)", "Created (Oldest)", "Name (A-Z)", "Name (Z-A)")
     val selectedSortOption = remember { mutableStateOf(sortOptions[0]) }
     val isDropdownExpanded = remember { mutableStateOf(false) }
-    val lineups = remember { mutableStateOf<List<Pair<String, Lineup>>>(emptyList()) }
-    val isLoading = remember { mutableStateOf(true) }
-    val error = remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(lineups) {
+        sortedLineups = lineups.sortedByDescending { it.second.timestamp }
+    }
 
     LaunchedEffect(teamName) {
-        firestoreRepository.fetchTeamLineups(
-            teamName = teamName,
-            onSuccess = { fetchedLineups ->
-                lineups.value = fetchedLineups.sortedBy { it.second.timestamp }
-                isLoading.value = false
-            },
-            onError = { e ->
-                error.value = e.message
-                isLoading.value = false
-            }
-        )
+        viewModel.fetchTeamLineups(teamName)
     }
 
     Box(
@@ -99,23 +87,6 @@ fun TeamLineups(
                     navController.navigate("lineups_by_team")
                 }
         )
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            if (isLoading.value) {
-                Text(
-                    text = "Loading...",
-                    color = Color.White
-                )
-            } else if (error.value != null) {
-                Text(
-                    text = "Error: ${error.value}",
-                    color = Color.Red
-                )
-            }
-        }
 
         Column(
             modifier = Modifier.fillMaxSize()
@@ -178,16 +149,16 @@ fun TeamLineups(
 
                                     when(option) {
                                         "Created (Newest)" -> {
-                                            lineups.value = lineups.value.sortedByDescending { it.second.timestamp }
+                                            sortedLineups = lineups.sortedByDescending { it.second.timestamp }
                                         }
                                         "Created (Oldest)" -> {
-                                            lineups.value = lineups.value.sortedBy { it.second.timestamp }
+                                            sortedLineups = lineups.sortedBy { it.second.timestamp }
                                         }
                                         "Name (A-Z)" -> {
-                                            lineups.value = lineups.value.sortedBy { it.first }
+                                            sortedLineups = lineups.sortedBy { it.first }
                                         }
                                         "Name (Z-A)" -> {
-                                            lineups.value = lineups.value.sortedByDescending { it.first }
+                                            sortedLineups = lineups.sortedByDescending { it.first }
                                         }
                                     }
                                 },
@@ -212,7 +183,7 @@ fun TeamLineups(
                     .padding(top = 20.dp)
                     .fillMaxHeight(0.9f)
             ) {
-                items(lineups.value) { lineup ->
+                items(sortedLineups) { lineup ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier

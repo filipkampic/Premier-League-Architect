@@ -8,7 +8,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    viewModel: LineupsViewModel
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -17,14 +19,14 @@ fun AppNavigation() {
     ) {
         composable("home") { HomeScreen(navController = navController) }
         composable("team_selection") { CreateLineupMenu(navController = navController) }
-        composable("saved_lineups") { SavedLineupsMenu(navController = navController) }
+        composable("saved_lineups") { SavedLineupsMenu(navController = navController, viewModel = viewModel) }
         composable("lineups_by_team") { LineupsByTeamMenu(navController = navController) }
         composable(
             route = "team_lineups/{teamName}",
             arguments = listOf(navArgument("teamName") { type = NavType.StringType })
         ) { backStackEntry ->
             val teamName = backStackEntry.arguments?.getString("teamName") ?: ""
-            TeamLineups(navController = navController, teamName = teamName, firestoreRepository = FirestoreRepository())
+            TeamLineups(navController = navController, teamName = teamName, viewModel = viewModel)
         }
         composable(
             route = "lineup_builder/{teamName}/{teamLogo}/{teamJersey}/{teamGoalkeeperJersey}/{lineupName}",
@@ -44,12 +46,13 @@ fun AppNavigation() {
 
             LineupBuilder(
                 navController = navController,
+                viewModel = viewModel,
                 teamName = teamName,
                 teamLogo = teamLogo,
                 teamJersey = teamJersey,
                 teamGoalkeeperJersey = teamGoalkeeperJersey,
                 lineupName = lineupName,
-                onSave = {  },
+                onSave = { navController.navigate("team_lineups/$teamName") },
                 onLeave = { navController.navigate("home") }
             )
         }

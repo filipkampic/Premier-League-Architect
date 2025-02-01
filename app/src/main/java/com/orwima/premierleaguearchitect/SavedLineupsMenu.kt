@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,8 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -35,42 +36,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-
-@Composable
-@Preview(showBackground = true)
-fun SavedLineupsMenuPreview() {
-    SavedLineupsMenu(navController = rememberNavController(), firestoreRepository = FirestoreRepository())
-}
 
 @Composable
 fun SavedLineupsMenu(
     navController: NavController,
-    firestoreRepository: FirestoreRepository = FirestoreRepository()
+    viewModel: LineupsViewModel
 ) {
-    val lineups = remember { mutableStateOf<List<Pair<String, Lineup>>>(emptyList()) }
-    val isLoading = remember { mutableStateOf(true) }
-    val error = remember { mutableStateOf<String?>(null) }
+    val lineups by viewModel.lineups.collectAsState()
+    var sortedLineups by remember { mutableStateOf(emptyList<Pair<String, Lineup>>()) }
 
     val sortOptions = listOf("Created (Newest)", "Created (Oldest)", "Name (A-Z)", "Name (Z-A)", "Club (A-Z)", "Club (Z-A)")
     val selectedSortOption = remember { mutableStateOf(sortOptions[0]) }
     val isDropdownExpanded = remember { mutableStateOf(false) }
 
+    LaunchedEffect(lineups) {
+        sortedLineups = lineups.sortedByDescending { it.second.timestamp }
+    }
+
     LaunchedEffect(Unit) {
-        firestoreRepository.fetchAllLineups(
-            onSuccess = { fetchedLineups ->
-                lineups.value = fetchedLineups.sortedBy { it.second.timestamp }
-                isLoading.value = false
-            },
-            onError = { e ->
-                error.value = e.message
-                isLoading.value = false
-            }
-        )
+        viewModel.fetchAllLineups()
     }
 
     Box(
@@ -100,23 +87,6 @@ fun SavedLineupsMenu(
                     navController.navigate("home")
                 }
         )
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            if (isLoading.value) {
-                Text(
-                    text = "Loading...",
-                    color = Color.White
-                )
-            } else if (error.value != null) {
-                Text(
-                    text = "Error: ${error.value}",
-                    color = Color.Red
-                )
-            }
-        }
 
         Column(
             modifier = Modifier.fillMaxSize()
@@ -182,30 +152,27 @@ fun SavedLineupsMenu(
 
                                     when (option) {
                                         "Created (Newest)" -> {
-                                            lineups.value = lineups.value.sortedByDescending { it.second.timestamp }
+                                            sortedLineups = lineups.sortedByDescending { it.second.timestamp }
                                         }
 
                                         "Created (Oldest)" -> {
-                                            lineups.value = lineups.value.sortedBy { it.second.timestamp }
+                                            sortedLineups = lineups.sortedBy { it.second.timestamp }
                                         }
 
                                         "Name (A-Z)" -> {
-                                            lineups.value = lineups.value.sortedBy { it.first }
+                                            sortedLineups = lineups.sortedBy { it.first }
                                         }
 
                                         "Name (Z-A)" -> {
-                                            lineups.value =
-                                                lineups.value.sortedByDescending { it.first }
+                                            sortedLineups = lineups.sortedByDescending { it.first }
                                         }
 
                                         "Club (A-Z)" -> {
-                                            lineups.value =
-                                                lineups.value.sortedBy { it.second.team }
+                                            sortedLineups = lineups.sortedBy { it.second.team }
                                         }
 
                                         "Club (Z-A)" -> {
-                                            lineups.value =
-                                                lineups.value.sortedByDescending { it.second.team }
+                                            sortedLineups = lineups.sortedByDescending { it.second.team }
                                         }
                                     }
                                 },
@@ -230,7 +197,7 @@ fun SavedLineupsMenu(
                     .padding(top = 20.dp)
                     .fillMaxHeight(0.9f)
             ) {
-                items(lineups.value) { lineup ->
+                items(sortedLineups) { lineup ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
