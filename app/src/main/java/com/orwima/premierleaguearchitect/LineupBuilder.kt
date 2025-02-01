@@ -336,7 +336,9 @@ fun LineupBuilder(
                             )
                             viewModel.fetchTeamLineups(teamName)
                             onSave()
-                            navController.navigate("team_lineups/$teamName")
+                            navController.navigate("team_lineups/$teamName") {
+                                popUpTo("lineup_builder/$teamName/$teamLogo/$teamJersey/$teamGoalkeeperJersey/$lineupName") { inclusive = true }
+                            }
                         },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF40C5C)),
